@@ -9,30 +9,61 @@
         <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
     </head>
     <body>
-        <div class="title">
+        <div class="header">
             <div class="titulo">
-                <h1>
-                    <em>Knight Runner</em>
-                </h1>
+                <em>Knight Runner</em>
             </div>
             <div class="subtitulo">
-                <p>
-                    <em>Knight Runner</em> é um jogo desenvolvido pelos alunos Guilherme Kaidei e Henrique Mayor 
+                <em>Knight Runner</em> é um jogo desenvolvido pelos alunos Guilherme Kaidei e Henrique Mayor 
                     como um projeto do curso de Ciência da Computação do Insper
-                </p>
             </div>
         </div>
         
+        <div class="descricao">
+            <div class="descricao-titulo">
+                <strong>Descrição do jogo:</strong>
+            </div>
+            <div class="descricao-conteudo">
+                <em>Knight Runner</em> é um jogo em 2D em que um cavaleiro corre enquanto desvia de obstáculos
+                    e enfrenta inimigos. O objetivo do jogo é sobreviver o máximo de tempo e matar o maior número 
+                    de inimigos possíveis para obter pontos. Enquanto pula e atira para vencer desafios, o jogador
+                    deve levar em consideração as 3 vidas que possui. Se o cavaleiro perder todas as vidas, o jogo acaba.
+            </div>
+            <div class="descricao-imagens">
+                <div class="descricao-imagem1">
+                    <img class = 'descricao-imagem' src="images/foto_teste.webp" alt="foto_teste">
+                    <p class="descricao-imagem-texto">
+                        Pule para desviar de obstáculos
+                    </p>
+                </div>
+                <div class="descricao-imagem2">
+                    <img class = 'descricao-imagem' src="images/foto_teste2.webp" alt="foto_teste">
+                    <p class="descricao-imagem-texto">
+                        Atire para matar inimigos
+                    </p>
+                </div>
+            </div>
+        </div>
 
-        <h2>Descrição do jogo:</h2>
-        <p><em>Knight Runner</em> é um jogo em 2D em que um cavaleiro corre enquanto desvia de obstáculos
-            e enfrenta inimigos. O objetivo do jogo é sobreviver o máximo de tempo e matar o maior número 
-            de inimigos possíveis para obter pontos. Enquanto pula e atira para vencer desafios, o jogador
-            deve levar em consideração as 3 vidas que possui. Se o cavaleiro perder todas as vidas, o jogo acaba.
-        </p>
-
-        <h2>Instruções para o download</h2>
-        <p>........</p>
+        <div class="como-jogar">
+            <div class="como-jogar-titulo">
+                <strong>Como jogar:</strong>
+            </div>
+            <div class="como-jogar-conteudo">
+                <p>
+                    Para jogar, é necessário ter o Python 3 instalado na máquina. 
+                    Além disso, você deve instalar a biblioteca pygame com o comando:
+                    pip install pygame. Após instalar a biblioteca, utilize o botão abaixo 
+                    para baixar o jogo e extraia o arquivo. Após isso, execute o arquivo jogo.py e
+                    o jogo será aberto em uma nova janela.
+                </p>
+            </div>
+            <div class="como-jogar-botao">
+                <a href="teste.zip" download> 
+                    <button class="botao-download">Download</button> 
+                </a> 
+            </div>
+        </div>
 
         <h3>Log de desenvolvimento:</h3>
         <p><em>Dia 1(18/04):</em></p>

@@ -1,12 +1,83 @@
-.title {
+.header {
     text-align: center;
+    margin: 10px;
 }
 
 .titulo {
     font-family: 'Acme', sans-serif;
-    font-size: 30px;
+    font-size: 70px;
+    margin: 15px;
 }
 
 .subtitulo {
+    font-size: 23px;
+}
+
+.descricao {
+    margin: 40px 5px 20px;
+}
+
+.descricao-titulo {
+    font-size: 30px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.descricao-conteudo {
+    display: block;
     font-size: 20px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.descricao-imagens {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.descricao-imagem1 {
+    width: 49%
+}
+
+.descricao-imagem2 {
+    width: 49%
+}
+
+.descricao-imagem {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.descricao-imagem-texto {
+    font-size: 20px;
+    margin: 0px;
+    text-align: center;
+}
+
+.como-jogar {
+    margin: 40px 5px 20px;
+}
+
+.como-jogar-titulo {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.como-jogar-conteudo {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.como-jogar-botao {
+    text-align: center;
+    margin: 20px;
+}
+
+.botao-download {
+    background-color: green
 }
