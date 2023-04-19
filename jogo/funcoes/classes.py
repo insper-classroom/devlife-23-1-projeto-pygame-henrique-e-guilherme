@@ -1,7 +1,6 @@
 import pygame
 
 
-#TODO: Não precisa do dicionário assets (so precisa acertar um jeito de importar a tela), arrumar funcoes_do_jogo.py
 
 
 class TelaInicial():
@@ -73,7 +72,6 @@ class TelaJogo():
                     #a condicao de trocar tela vira true
                     self.tem_que_trocar = True
             self.jogador.pulo_jogador(event)
-        self.jogador.gravidade += 0.1
         return True
     
     def troca_tela(self):
@@ -92,7 +90,7 @@ class Jogador(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         #Coordenadas
-        self.rect.centerx = 30
+        self.rect.centerx = 60
         self.rect.centery = 560
 
         self.x = 0
@@ -109,6 +107,7 @@ class Jogador(pygame.sprite.Sprite):
         
         #Faz o jogador cair
         self.rect.centery += self.gravidade
+        self.gravidade += 0.05
 
 
         #Não deixa o jogador passar do chão
@@ -123,7 +122,7 @@ class Jogador(pygame.sprite.Sprite):
 
                 #Faz o jogador pular
                 if self.rect.bottom >= 560:
-                    self.gravidade = -8
+                    self.gravidade = -6
 
 class Inimigo (pygame.sprite.Sprite):
     def __init__(self):
