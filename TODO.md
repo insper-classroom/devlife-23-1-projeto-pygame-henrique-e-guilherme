@@ -1,8 +1,7 @@
-#
-TODO
+# TODO
 
-#
-* Física
+
+## Física
 - Arrumar arquivo funções, talvez não preciso do dicionário assets e das funções que estão lá
 
 - Arrumar física do jogador, o pulo é muito rápido, talvez a lógica por trás do pulo esteja errada
@@ -10,8 +9,8 @@ TODO
 - Arrumar velocidade do inimigo, está vindo muito rápido mesmo sua velocidade sendo 1 (checar handout MUV)
 
 
-#
-* Imagens
+## Imagens
+    
 - Mudar fundo
 
 - Mudar imagem do jogador
