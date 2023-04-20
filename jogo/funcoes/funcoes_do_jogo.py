@@ -3,8 +3,6 @@ from classes import TelaInicial, TelaJogo
 
 def inicializa():
     pygame.init()
-
-
     tela = pygame.display.set_mode((1280,720))
     fonte = pygame.font.get_default_font()
     pygame.display.set_caption('Knight Runner')
@@ -12,6 +10,7 @@ def inicializa():
     assets ={
         'tela': tela,
         'fonte': fonte,
+        
         #Adicionei essas imagens so para testar e dps mudar
         'fundo': pygame.transform.scale((pygame.image.load('jogo/assets/fundo_provisorio.png').convert_alpha()), (1280, 720)),
         'ground': pygame.transform.scale((pygame.image.load('jogo/assets/ground_provisorio.png').convert_alpha()), (1280, 300)),
@@ -19,12 +18,6 @@ def inicializa():
     }
     return assets
 
-def recebe_eventos():
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            return False
-    return True
 
 def game_loop():
     assets = inicializa()

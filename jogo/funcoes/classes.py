@@ -44,6 +44,7 @@ class TelaJogo():
         self.tela = assets['tela']
 
         self.tem_que_trocar = False
+        self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
 
 
         self.inimigo = Inimigo()
@@ -60,6 +61,8 @@ class TelaJogo():
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
 
+        self.Clock.tick(60) #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
+
         pygame.display.update()
 
     def update(self):
@@ -72,6 +75,7 @@ class TelaJogo():
                     #a condicao de trocar tela vira true
                     self.tem_que_trocar = True
             self.jogador.pulo_jogador(event)
+        
         return True
     
     def troca_tela(self):
@@ -105,16 +109,15 @@ class Jogador(pygame.sprite.Sprite):
 
     def update(self):
         
-        #Faz o jogador cair
+        #Faz o jogador cair, simula o efeito da aceleração da gravidade
         self.rect.centery += self.gravidade
-        self.gravidade += 0.05
+        self.gravidade += 1
 
 
         #Não deixa o jogador passar do chão
         if self.rect.centery >= 560:
             self.rect.centery = 560
-            
-
+        
     def pulo_jogador (self, event):
 
         if event.type == pygame.KEYDOWN:
@@ -122,7 +125,7 @@ class Jogador(pygame.sprite.Sprite):
 
                 #Faz o jogador pular
                 if self.rect.bottom >= 560:
-                    self.gravidade = -6
+                    self.gravidade = -20
 
 class Inimigo (pygame.sprite.Sprite):
     def __init__(self):
@@ -138,7 +141,7 @@ class Inimigo (pygame.sprite.Sprite):
         self.rect.centery = 600
     
     def update(self):
-        self.rect.centerx -= 1
+        self.rect.centerx -= 5
 
         if self.rect.centerx <= -100:
             self.rect.centerx = 1280
