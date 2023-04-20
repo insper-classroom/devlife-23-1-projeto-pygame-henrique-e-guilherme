@@ -1,7 +1,8 @@
 # TODO
 
-Legenda: ~~Exemplo~~  - > feito;
-***Exemplo*** - > Preferencialmente fazer;
+Legenda: 
+- ~~Exemplo~~  - > feito;
+- ***Exemplo*** - > Preferencialmente fazer;
 
 
 ## Física
