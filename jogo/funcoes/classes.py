@@ -8,12 +8,30 @@ class TelaInicial():
         self.dicionario = assets
         self.tela = assets['tela']
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela inicial', True, (0, 0, 0))
+        self.texto = self.fonte.render('Tela inicial', True, (0, 255, 0))
+
+        self.fonte2 = assets['fonte2']
+        self.texto2 = self.fonte2.render('Pressione "ESPAÇO" para continuar', True, (255, 230, 0))
+        self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+        
+        self.logo = pygame.transform.scale(pygame.image.load('jogo/assets/logo.png'), (812, 98))
+
+        self.fundo = assets['fundo']
+        self.chao = assets['ground']
+
         self.tem_que_trocar = False
 
     def desenha(self):
         self.tela.fill((255, 255, 255))
+
+        self.tela.blit(self.fundo, (0, 0))
+        self.tela.blit(self.chao, (0, 620))
+
         self.tela.blit(self.texto, (300, 0))
+
+        self.tela.blit(self.logo, (234, 250))
+
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 368))
         pygame.display.update()
 
     def update(self):
@@ -22,7 +40,7 @@ class TelaInicial():
                 pygame.quit()
                 return False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_TAB:
+                if event.key == pygame.K_SPACE:
                     self.tem_que_trocar = True
         return True
     
@@ -46,14 +64,30 @@ class TelaJogo():
         self.tem_que_trocar = False
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
 
+        #fonte: https://youtu.be/ARt6DLP38-Y
+        self.scroll_fundo = 0
+        self.tiles_fundo = 1280 // self.fundo.get_width() + 1
+
+        self.scroll_chao = 0
+        self.tiles_chao = 1280 // self.chao.get_width() + 1
 
         self.inimigo = Inimigo()
         self.jogador = Jogador()
 
     def desenha(self):
-        self.tela.blit(self.fundo, (0, 0))
+        for i in range(self.tiles_fundo):
+            self.tela.blit(self.fundo, (i * self.fundo.get_width() + self.scroll_fundo, 0))
+        self.scroll_fundo -= 5
+        if abs(self.scroll_fundo) > self.fundo.get_width():
+            self.scroll_fundo = 0
+        
+        for i in range(self.tiles_chao):
+            self.tela.blit(self.chao, (i * self.chao.get_width() + self.scroll_chao, 620))
+        self.scroll_chao -= 5
+        if abs(self.scroll_chao) > self.chao.get_width():
+            self.scroll_chao = 0
+ 
         self.tela.blit(self.texto, (250, 0))
-        self.tela.blit(self.chao, (0, 620))
 
         self.inimigo.update()
         self.tela.blit(self.inimigo.image, self.inimigo.rect)
@@ -141,7 +175,7 @@ class Inimigo (pygame.sprite.Sprite):
         self.rect.centery = 600
     
     def update(self):
-        self.rect.centerx -= 5
+        self.rect.centerx -= 3
 
         if self.rect.centerx <= -100:
             self.rect.centerx = 1280
