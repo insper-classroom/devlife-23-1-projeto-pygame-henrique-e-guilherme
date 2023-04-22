@@ -61,6 +61,9 @@ class TelaJogo():
         self.chao = assets['ground']
         self.tela = assets['tela']
 
+        self.fonte2 = assets['fonte2']
+        
+
         self.tem_que_trocar = False
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
 
@@ -73,6 +76,8 @@ class TelaJogo():
 
         self.inimigo = Inimigo()
         self.jogador = Jogador()
+
+        self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
     def desenha(self):
         for i in range(self.tiles_fundo):
@@ -88,6 +93,8 @@ class TelaJogo():
             self.scroll_chao = 0
  
         self.tela.blit(self.texto, (250, 0))
+
+        self.tela.blit(self.texto_vidas, (7, 5))
 
         self.inimigo.update()
         self.tela.blit(self.inimigo.image, self.inimigo.rect)
@@ -126,6 +133,8 @@ class Jogador(pygame.sprite.Sprite):
         self.image = pygame.image.load('jogo/assets/jogador_provisorio.png').convert_alpha()
         self.image = pygame.transform.scale_by(self.image, 4)
         self.rect = self.image.get_rect()
+
+        self.vidas = 3
 
         #Coordenadas
         self.rect.centerx = 60
