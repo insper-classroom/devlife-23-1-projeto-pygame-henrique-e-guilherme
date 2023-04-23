@@ -19,6 +19,8 @@ class TelaInicial():
         self.fundo = assets['fundo']
         self.chao = assets['ground']
 
+
+
         self.tem_que_trocar = False
 
     def desenha(self):
@@ -63,6 +65,9 @@ class TelaJogo():
 
         self.fonte2 = assets['fonte2']
         
+        self.imune = False
+        self.timer_imune_comeco = 0
+        self.timer_imune_fim = 0
 
         self.tem_que_trocar = False
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
@@ -77,15 +82,20 @@ class TelaJogo():
         self.inimigo = Inimigo()
         self.jogador = Jogador()
 
+        #Texto das vidas
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
+
+
     def desenha(self):
+        #Fundo infinito
         for i in range(self.tiles_fundo):
             self.tela.blit(self.fundo, (i * self.fundo.get_width() + self.scroll_fundo, 0))
         self.scroll_fundo -= 5
         if abs(self.scroll_fundo) > self.fundo.get_width():
             self.scroll_fundo = 0
         
+        #Chao infinito
         for i in range(self.tiles_chao):
             self.tela.blit(self.chao, (i * self.chao.get_width() + self.scroll_chao, 620))
         self.scroll_chao -= 5
@@ -94,6 +104,7 @@ class TelaJogo():
  
         self.tela.blit(self.texto, (250, 0))
 
+        #Vidas
         self.tela.blit(self.texto_vidas, (7, 5))
 
         self.inimigo.update()
@@ -117,6 +128,18 @@ class TelaJogo():
                     self.tem_que_trocar = True
             self.jogador.pulo_jogador(event)
         
+        #colisao com monstro
+        if self.jogador.rect.colliderect(self.inimigo.rect):
+            if not self.imune:
+                self.jogador.vidas -= 1
+                self.imune = True
+                self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
+                self.timer_imune_comeco = pygame.time.get_ticks()
+            else:
+                self.timer_imune_fim = pygame.time.get_ticks()
+                if self.timer_imune_fim - self.timer_imune_comeco > 3000:
+                    self.imune = False
+
         return True
     
     def troca_tela(self):
