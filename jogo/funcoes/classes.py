@@ -19,7 +19,7 @@ class TelaInicial():
         self.fundo = assets['fundo']
         self.chao = assets['ground']
 
-
+        self.musica_tela_inicial_tocando = False
 
         self.tem_que_trocar = False
 
@@ -37,6 +37,12 @@ class TelaInicial():
         pygame.display.update()
 
     def update(self):
+        if not self.musica_tela_inicial_tocando:
+            pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
+            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.play()
+            self.musica_tela_inicial_tocando = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -86,6 +92,8 @@ class TelaJogo():
         self.inimigos.add(Inimigo())
         self.timer_spawn_comeco = 0
 
+        self.musica_jogo_tocando = False
+
         #Texto das vidas
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
@@ -125,6 +133,12 @@ class TelaJogo():
         pygame.display.update()
 
     def update(self):
+        if not self.musica_jogo_tocando:
+            pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+            pygame.mixer_music.set_volume(0.2)
+            pygame.mixer_music.play()
+            self.musica_jogo_tocando = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -135,12 +149,14 @@ class TelaJogo():
                     self.tem_que_trocar = True
                 elif event.key == pygame.K_w:
                     self.tiros.add(Tiro(self.jogador.rect.centery))
+                    Tiro(self.jogador.rect.centery).som.play()
             self.jogador.pulo_jogador(event)
         
         #colisao com monstro
         if pygame.sprite.spritecollide(self.jogador, self.inimigos, False):
             if not self.imune:
                 self.jogador.vidas -= 1
+                self.jogador.dano_som.play()
                 self.imune = True
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
                 self.timer_imune_comeco = pygame.time.get_ticks()
@@ -149,7 +165,8 @@ class TelaJogo():
                 if self.timer_imune_fim - self.timer_imune_comeco > 3000:
                     self.imune = False
         
-        pygame.sprite.groupcollide(self.inimigos, self.tiros, True, True)
+        if pygame.sprite.groupcollide(self.inimigos, self.tiros, True, True):
+            self.jogador.pontuou_som.play()
 
         self.timer_spawn_fim = pygame.time.get_ticks()
         if self.timer_spawn_fim - self.timer_spawn_comeco > 5000:
@@ -172,6 +189,9 @@ class Jogador(pygame.sprite.Sprite):
         self.image = pygame.image.load('jogo/assets/jogador_provisorio.png').convert_alpha()
         self.image = pygame.transform.scale_by(self.image, 4)
         self.rect = self.image.get_rect()
+
+        self.dano_som = pygame.mixer.Sound('jogo/assets/dano_som.mp3')
+        self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
 
         self.vidas = 3
 
@@ -238,6 +258,8 @@ class Tiro (pygame.sprite.Sprite):
 
         self.rect.centery = jogador_center_y
         self.rect.centerx = 60
+
+        self.som = pygame.mixer.Sound('jogo/assets/tiro_som.mp3')
 
     def update(self):
         self.rect.centerx += 3
