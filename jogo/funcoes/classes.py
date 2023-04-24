@@ -79,9 +79,12 @@ class TelaJogo():
         self.scroll_chao = 0
         self.tiles_chao = 1280 // self.chao.get_width() + 1
 
-        self.inimigo = Inimigo()
         self.jogador = Jogador()
         self.tiros = pygame.sprite.Group()
+
+        self.inimigos = pygame.sprite.Group()
+        self.inimigos.add(Inimigo())
+        self.timer_spawn_comeco = 0
 
         #Texto das vidas
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
@@ -108,8 +111,8 @@ class TelaJogo():
         #Vidas
         self.tela.blit(self.texto_vidas, (7, 5))
 
-        self.inimigo.update()
-        self.tela.blit(self.inimigo.image, self.inimigo.rect)
+        self.inimigos.update()
+        self.inimigos.draw(self.tela)
 
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
@@ -131,11 +134,11 @@ class TelaJogo():
                     #a condicao de trocar tela vira true
                     self.tem_que_trocar = True
                 elif event.key == pygame.K_w:
-                    self.tiros.add(Tiro())
+                    self.tiros.add(Tiro(self.jogador.rect.centery))
             self.jogador.pulo_jogador(event)
         
         #colisao com monstro
-        if self.jogador.rect.colliderect(self.inimigo.rect):
+        if pygame.sprite.spritecollide(self.jogador, self.inimigos, False):
             if not self.imune:
                 self.jogador.vidas -= 1
                 self.imune = True
@@ -146,8 +149,12 @@ class TelaJogo():
                 if self.timer_imune_fim - self.timer_imune_comeco > 3000:
                     self.imune = False
         
-        if pygame.sprite.spritecollide(self.inimigo, self.tiros, True):
-            self.inimigo.vidas -= 1
+        pygame.sprite.groupcollide(self.inimigos, self.tiros, True, True)
+
+        self.timer_spawn_fim = pygame.time.get_ticks()
+        if self.timer_spawn_fim - self.timer_spawn_comeco > 5000:
+            self.inimigos.add(Inimigo())
+            self.timer_spawn_comeco = self.timer_spawn_fim
 
         return True
     
@@ -186,7 +193,7 @@ class Jogador(pygame.sprite.Sprite):
         
         #Faz o jogador cair, simula o efeito da aceleração da gravidade
         self.rect.centery += self.gravidade
-        self.gravidade += 1
+        self.gravidade += 0.3
 
 
         #Não deixa o jogador passar do chão
@@ -199,7 +206,7 @@ class Jogador(pygame.sprite.Sprite):
 
                 #Faz o jogador pular
                 if self.rect.bottom >= 560:
-                    self.gravidade = -20
+                    self.gravidade = -15
 
 class Inimigo (pygame.sprite.Sprite):
     def __init__(self):
@@ -222,13 +229,14 @@ class Inimigo (pygame.sprite.Sprite):
         if self.rect.centerx <= -100 or self.vidas <= 0:
             self.rect.centerx = 1300
 
+
 class Tiro (pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, jogador_center_y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
         self.rect = self.image.get_rect()
 
-        self.rect.centery = 600
+        self.rect.centery = jogador_center_y
         self.rect.centerx = 60
 
     def update(self):
