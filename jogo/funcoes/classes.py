@@ -1,5 +1,5 @@
 import pygame
-import random
+
 
 
 
@@ -62,16 +62,20 @@ class TelaJogo():
     def __init__(self, assets):
 
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela Jogo', True, (255, 0, 0))
+        self.texto = self.fonte.render('Tela Jogo', True, (0, 255, 0))
         self.dicionario = assets
         #Adicionei essas imagens so para testar e dps mudar
         self.fundo = assets['fundo']
         self.chao = assets['ground']
         self.tela = assets['tela']
 
+        self.fonte2 = assets['fonte2']
+        
+        self.imune = False
+        self.timer_imune_comeco = 0
+        self.timer_imune_fim = 0
+
         self.tem_que_trocar = False
-        self.tempo = 0
-        self.pode = True
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
 
         #fonte: https://youtu.be/ARt6DLP38-Y
@@ -82,6 +86,18 @@ class TelaJogo():
         self.tiles_chao = 1280 // self.chao.get_width() + 1
 
         self.jogador = Jogador()
+        self.tiros = pygame.sprite.Group()
+
+        self.inimigos = pygame.sprite.Group()
+        self.inimigos.add(Inimigo())
+        self.timer_spawn_comeco = 0
+
+        self.musica_jogo_tocando = False
+
+        #Texto das vidas
+        self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
+
+
 
     def desenha(self):
         #Fundo infinito
@@ -103,19 +119,26 @@ class TelaJogo():
         #Vidas
         self.tela.blit(self.texto_vidas, (7, 5))
 
-        self.inimigo.update()
-        self.tela.blit(self.inimigo.image, self.inimigo.rect)
+        self.inimigos.update()
+        self.inimigos.draw(self.tela)
 
         self.jogador.update()
-
-        self.vidas = self.fonte.render(str(self.jogador.vidas), True, (255, 0, 0))
         self.tela.blit(self.jogador.image, self.jogador.rect)
+
+        self.tiros.update()
+        self.tiros.draw(self.tela)
 
         self.Clock.tick(60) #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
 
         pygame.display.update()
 
     def update(self):
+        if not self.musica_jogo_tocando:
+            pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+            pygame.mixer_music.set_volume(0.2)
+            pygame.mixer_music.play()
+            self.musica_jogo_tocando = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -129,6 +152,27 @@ class TelaJogo():
                     Tiro(self.jogador.rect.centery).som.play()
             self.jogador.pulo_jogador(event)
         
+        #colisao com monstro
+        if pygame.sprite.spritecollide(self.jogador, self.inimigos, False):
+            if not self.imune:
+                self.jogador.vidas -= 1
+                self.jogador.dano_som.play()
+                self.imune = True
+                self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
+                self.timer_imune_comeco = pygame.time.get_ticks()
+            else:
+                self.timer_imune_fim = pygame.time.get_ticks()
+                if self.timer_imune_fim - self.timer_imune_comeco > 3000:
+                    self.imune = False
+        
+        if pygame.sprite.groupcollide(self.inimigos, self.tiros, True, True):
+            self.jogador.pontuou_som.play()
+
+        self.timer_spawn_fim = pygame.time.get_ticks()
+        if self.timer_spawn_fim - self.timer_spawn_comeco > 5000:
+            self.inimigos.add(Inimigo())
+            self.timer_spawn_comeco = self.timer_spawn_fim
+
         return True
     
     def troca_tela(self):
@@ -136,14 +180,6 @@ class TelaJogo():
             return TelaInicial(self.dicionario)
         else:
             return self
-
-    def spawn_inimigo(self):
-        if random.randint(0, 1):
-            condicao = True
-        else: condicao = False
-        self.lista_de_inimigos.append(Inimigo(condicao))
-
-
 
 class Jogador(pygame.sprite.Sprite):
     def __init__(self):
@@ -154,15 +190,20 @@ class Jogador(pygame.sprite.Sprite):
         self.image = pygame.transform.scale_by(self.image, 4)
         self.rect = self.image.get_rect()
 
+        self.dano_som = pygame.mixer.Sound('jogo/assets/dano_som.mp3')
+        self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
+
+        self.vidas = 3
+
         #Coordenadas
-        self.rect.centerx = 60      #https://www.pygame.org/docs/ref/rect.html
+        self.rect.centerx = 60
         self.rect.centery = 560
 
         self.x = 0
         self.delta_t = 0
         #Velocidade y
 
-        self.vely = -25
+        self.vely = -21
 
         #Gravidade
         self.gravidade = 0
@@ -182,35 +223,47 @@ class Jogador(pygame.sprite.Sprite):
     def pulo_jogador (self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+
                 #Faz o jogador pular
                 if self.rect.bottom >= 560:
-                    self.gravidade = -20
+                    self.gravidade = -15
 
 class Inimigo (pygame.sprite.Sprite):
-    def __init__(self, em_cima):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        #Tipo de Inimigo
-        if em_cima:
-            posicao_y = 400
-            self.image = pygame.image.load('jogo/assets/ghost_provisorio.png').convert_alpha()
-            
-        else:
-            posicao_y = 595
-            self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
-            self.image = pygame.transform.flip(self.image, True, False)
-
-        
+        self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
         self.image = pygame.transform.scale_by(self.image, 4)
-        self.mask = pygame.mask.from_surface(self.image)
+        self.image = pygame.transform.flip(self.image, True, False)
 
-        self.rect = self.mask.get_rect()
-        self.rect.centery = posicao_y
+        self.rect = self.image.get_rect()
+
         self.rect.centerx = 1280
         self.rect.centery = 600
+
+        self.vidas = 3
     
+    def update(self):
+        self.rect.centerx -= 3
+
+        if self.rect.centerx <= -100 or self.vidas <= 0:
+            self.rect.centerx = 1300
+
+
+class Tiro (pygame.sprite.Sprite):
+    def __init__(self, jogador_center_y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
+        self.rect = self.image.get_rect()
+
+        self.rect.centery = jogador_center_y
+        self.rect.centerx = 60
+
+        self.som = pygame.mixer.Sound('jogo/assets/tiro_som.mp3')
+
     def update(self):
         self.rect.centerx += 3
 
         if self.rect.centerx > 1280:
             self.kill()
+
