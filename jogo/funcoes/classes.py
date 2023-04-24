@@ -1,5 +1,5 @@
 import pygame
-
+import random
 
 
 
@@ -70,10 +70,6 @@ class TelaJogo():
         self.tela = assets['tela']
 
         self.fonte2 = assets['fonte2']
-        
-        self.imune = False
-        self.timer_imune_comeco = 0
-        self.timer_imune_fim = 0
 
         self.tem_que_trocar = False
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
@@ -85,12 +81,13 @@ class TelaJogo():
         self.scroll_chao = 0
         self.tiles_chao = 1280 // self.chao.get_width() + 1
 
+        self.lista_de_inimigos = []
+        self.spawn_inimigo()
+        self.tempo = 0
+        self.pode = True
+
         self.jogador = Jogador()
         self.tiros = pygame.sprite.Group()
-
-        self.inimigos = pygame.sprite.Group()
-        self.inimigos.add(Inimigo())
-        self.timer_spawn_comeco = 0
 
         self.musica_jogo_tocando = False
 
@@ -119,9 +116,9 @@ class TelaJogo():
         #Vidas
         self.tela.blit(self.texto_vidas, (7, 5))
 
-        self.inimigos.update()
-        self.inimigos.draw(self.tela)
-
+        for inimigo in self.lista_de_inimigos:
+            inimigo.update()
+            self.tela.blit(inimigo.image, inimigo.rect)
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
 
@@ -152,34 +149,43 @@ class TelaJogo():
                     Tiro(self.jogador.rect.centery).som.play()
             self.jogador.pulo_jogador(event)
         
-        #colisao com monstro
-        if pygame.sprite.spritecollide(self.jogador, self.inimigos, False):
-            if not self.imune:
-                self.jogador.vidas -= 1
-                self.jogador.dano_som.play()
-                self.imune = True
-                self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
-                self.timer_imune_comeco = pygame.time.get_ticks()
-            else:
-                self.timer_imune_fim = pygame.time.get_ticks()
-                if self.timer_imune_fim - self.timer_imune_comeco > 3000:
-                    self.imune = False
-        
-        if pygame.sprite.groupcollide(self.inimigos, self.tiros, True, True):
-            self.jogador.pontuou_som.play()
+        relogio = pygame.time.get_ticks() // 1000
 
-        self.timer_spawn_fim = pygame.time.get_ticks()
-        if self.timer_spawn_fim - self.timer_spawn_comeco > 5000:
-            self.inimigos.add(Inimigo())
-            self.timer_spawn_comeco = self.timer_spawn_fim
+        #Fiz essa gambiarra pra remover o inimigo da lista de inimigos e ter a colisão perfeita (máscara)
+        for inimigo in self.lista_de_inimigos:
+            if self.jogador.colisao_jogador(inimigo):
+                self.lista_de_inimigos.remove(inimigo)
+                self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
+            if inimigo.rect.centerx <= -100:
+                self.lista_de_inimigos.remove(inimigo)
+            if pygame.sprite.spritecollide(inimigo, self.tiros, True):
+                self.lista_de_inimigos.remove(inimigo)
+                Jogador().pontuou_som.play()
+
+        #Spawna inimigos a cada 2 segundos
+        if relogio % 2 == 0 and self.pode and relogio != 0:
+            self.spawn_inimigo()
+            self.pode = False
+            self.tempo = relogio
+            
+        #Faz spawnar a cada 1 segundo
+        if self.tempo != relogio:
+            self.pode = True
 
         return True
+    
+    def spawn_inimigo(self):
+        if random.randint(0, 1):
+            condicao = True
+        else: condicao = False
+        self.lista_de_inimigos.append(Inimigo(condicao))
     
     def troca_tela(self):
         if self.tem_que_trocar:
             return TelaInicial(self.dicionario)
         else:
             return self
+        
 
 class Jogador(pygame.sprite.Sprite):
     def __init__(self):
@@ -189,6 +195,8 @@ class Jogador(pygame.sprite.Sprite):
         self.image = pygame.image.load('jogo/assets/jogador_provisorio.png').convert_alpha()
         self.image = pygame.transform.scale_by(self.image, 4)
         self.rect = self.image.get_rect()
+
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.dano_som = pygame.mixer.Sound('jogo/assets/dano_som.mp3')
         self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
@@ -226,29 +234,42 @@ class Jogador(pygame.sprite.Sprite):
 
                 #Faz o jogador pular
                 if self.rect.bottom >= 560:
-                    self.gravidade = -15
+                    self.gravidade = -10
+    
+    def colisao_jogador(self,  inimigo):
+        #Fazer a colisao do jogador com os inimigos
+        if pygame.sprite.collide_mask(self, inimigo):
+            self.vidas -= 1
+            self.dano_som.play()
+            return True
 
 class Inimigo (pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, em_cima):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
+        #Tipo de Inimigo
+        if em_cima:
+            posicao_y = 400
+            self.image = pygame.image.load('jogo/assets/ghost_provisorio.png').convert_alpha()
+            
+        else:
+            posicao_y = 595
+            self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
+            self.image = pygame.transform.flip(self.image, True, False)
+
+        
         self.image = pygame.transform.scale_by(self.image, 4)
-        self.image = pygame.transform.flip(self.image, True, False)
+        self.mask = pygame.mask.from_surface(self.image)
 
-        self.rect = self.image.get_rect()
-
+        self.rect = self.mask.get_rect()
+        self.rect.centery = posicao_y
         self.rect.centerx = 1280
-        self.rect.centery = 600
 
-        self.vidas = 3
-    
     def update(self):
         self.rect.centerx -= 3
 
-        if self.rect.centerx <= -100 or self.vidas <= 0:
-            self.rect.centerx = 1300
-
+        if self.rect.centerx <= -100:
+            self.kill()
 
 class Tiro (pygame.sprite.Sprite):
     def __init__(self, jogador_center_y):
