@@ -81,6 +81,7 @@ class TelaJogo():
 
         self.inimigo = Inimigo()
         self.jogador = Jogador()
+        self.tiros = pygame.sprite.Group()
 
         #Texto das vidas
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
@@ -113,6 +114,9 @@ class TelaJogo():
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
 
+        self.tiros.update()
+        self.tiros.draw(self.tela)
+
         self.Clock.tick(60) #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
 
         pygame.display.update()
@@ -126,6 +130,8 @@ class TelaJogo():
                 if event.key == pygame.K_TAB:
                     #a condicao de trocar tela vira true
                     self.tem_que_trocar = True
+                elif event.key == pygame.K_w:
+                    self.tiros.add(Tiro())
             self.jogador.pulo_jogador(event)
         
         #colisao com monstro
@@ -139,6 +145,9 @@ class TelaJogo():
                 self.timer_imune_fim = pygame.time.get_ticks()
                 if self.timer_imune_fim - self.timer_imune_comeco > 3000:
                     self.imune = False
+        
+        if pygame.sprite.spritecollide(self.inimigo, self.tiros, True):
+            self.inimigo.vidas -= 1
 
         return True
     
@@ -185,7 +194,6 @@ class Jogador(pygame.sprite.Sprite):
             self.rect.centery = 560
         
     def pulo_jogador (self, event):
-
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
 
@@ -205,9 +213,27 @@ class Inimigo (pygame.sprite.Sprite):
 
         self.rect.centerx = 1280
         self.rect.centery = 600
+
+        self.vidas = 1
     
     def update(self):
         self.rect.centerx -= 3
 
-        if self.rect.centerx <= -100:
-            self.rect.centerx = 1280
+        if self.rect.centerx <= -100 or self.vidas <= 0:
+            self.kill()
+
+
+class Tiro (pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
+        self.rect = self.image.get_rect()
+
+        self.rect.centery = 600
+        self.rect.centerx = 60
+
+    def update(self):
+        self.rect.centerx += 3
+
+        if self.rect.centerx > 1280:
+            self.kill()
