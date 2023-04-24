@@ -8,21 +8,47 @@ class TelaInicial():
         self.dicionario = assets
         self.tela = assets['tela']
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela inicial', True, (0, 0, 0))
+        self.texto = self.fonte.render('Tela inicial', True, (0, 255, 0))
+
+        self.fonte2 = assets['fonte2']
+        self.texto2 = self.fonte2.render('Pressione "ESPAÇO" para continuar', True, (255, 230, 0))
+        self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+        
+        self.logo = pygame.transform.scale(pygame.image.load('jogo/assets/logo.png'), (812, 98))
+
+        self.fundo = assets['fundo']
+        self.chao = assets['ground']
+
+        self.musica_tela_inicial_tocando = False
+
         self.tem_que_trocar = False
 
     def desenha(self):
         self.tela.fill((255, 255, 255))
+
+        self.tela.blit(self.fundo, (0, 0))
+        self.tela.blit(self.chao, (0, 620))
+
         self.tela.blit(self.texto, (300, 0))
+
+        self.tela.blit(self.logo, (234, 250))
+
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 368))
         pygame.display.update()
 
     def update(self):
+        if not self.musica_tela_inicial_tocando:
+            pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
+            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.play()
+            self.musica_tela_inicial_tocando = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_TAB:
+                if event.key == pygame.K_SPACE:
                     self.tem_que_trocar = True
         return True
     
@@ -42,44 +68,54 @@ class TelaJogo():
         self.fundo = assets['fundo']
         self.chao = assets['ground']
         self.tela = assets['tela']
-        
-        self.lista_de_inimigos = []
-        self.spawn_inimigo()
 
         self.tem_que_trocar = False
         self.tempo = 0
         self.pode = True
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
 
+        #fonte: https://youtu.be/ARt6DLP38-Y
+        self.scroll_fundo = 0
+        self.tiles_fundo = 1280 // self.fundo.get_width() + 1
+
+        self.scroll_chao = 0
+        self.tiles_chao = 1280 // self.chao.get_width() + 1
 
         self.jogador = Jogador()
-        self.vidas = self.fonte.render(str(self.jogador.vidas), True, (0, 255, 0))
-        
+
     def desenha(self):
-        self.tela.blit(self.fundo, (0, 0))
-        self.tela.blit(self.texto, (250, 0))
-        self.tela.blit(self.chao, (0, 620))
-
-        for inimigo in self.lista_de_inimigos:
-            inimigo.update()
-            self.tela.blit(inimigo.image, inimigo.rect)
-
+        #Fundo infinito
+        for i in range(self.tiles_fundo):
+            self.tela.blit(self.fundo, (i * self.fundo.get_width() + self.scroll_fundo, 0))
+        self.scroll_fundo -= 5
+        if abs(self.scroll_fundo) > self.fundo.get_width():
+            self.scroll_fundo = 0
         
+        #Chao infinito
+        for i in range(self.tiles_chao):
+            self.tela.blit(self.chao, (i * self.chao.get_width() + self.scroll_chao, 620))
+        self.scroll_chao -= 5
+        if abs(self.scroll_chao) > self.chao.get_width():
+            self.scroll_chao = 0
+ 
+        self.tela.blit(self.texto, (250, 0))
+
+        #Vidas
+        self.tela.blit(self.texto_vidas, (7, 5))
+
+        self.inimigo.update()
+        self.tela.blit(self.inimigo.image, self.inimigo.rect)
+
         self.jogador.update()
 
         self.vidas = self.fonte.render(str(self.jogador.vidas), True, (255, 0, 0))
         self.tela.blit(self.jogador.image, self.jogador.rect)
-        self.tela.blit(self.vidas, (0, 0))
-    
 
-        #Trava os fps pra movimentação ficar clean  
         self.Clock.tick(60) #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
 
         pygame.display.update()
 
     def update(self):
-        relogio = pygame.time.get_ticks() // 1000
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -88,24 +124,11 @@ class TelaJogo():
                 if event.key == pygame.K_TAB:
                     #a condicao de trocar tela vira true
                     self.tem_que_trocar = True
+                elif event.key == pygame.K_w:
+                    self.tiros.add(Tiro(self.jogador.rect.centery))
+                    Tiro(self.jogador.rect.centery).som.play()
             self.jogador.pulo_jogador(event)
-
-        #Fiz essa gambiarra pra remover o inimigo da lista de inimigos e ter a colisão perfeita (máscara)
-        for inimigo in self.lista_de_inimigos:
-            if self.jogador.colisao_jogador(inimigo) or inimigo.rect.centerx <= 0:
-                self.lista_de_inimigos.remove(inimigo)
-
-        #Spawna inimigos a cada 2 segundos
-        if relogio % 2 == 0 and self.pode and relogio != 0:
-            self.spawn_inimigo()
-            self.pode = False
-            self.tempo = relogio
-            
-        #Faz spawnar a cada 1 segundo
-        if self.tempo != relogio:
-            self.pode = True
-
-            
+        
         return True
     
     def troca_tela(self):
@@ -129,12 +152,7 @@ class Jogador(pygame.sprite.Sprite):
         #Cria retangulo e aumenta a imagem
         self.image = pygame.image.load('jogo/assets/jogador_provisorio.png').convert_alpha()
         self.image = pygame.transform.scale_by(self.image, 4)
-        
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.mask.get_rect()
-
-        #Vidas
-        self.vidas = 5
+        self.rect = self.image.get_rect()
 
         #Coordenadas
         self.rect.centerx = 60      #https://www.pygame.org/docs/ref/rect.html
@@ -154,7 +172,7 @@ class Jogador(pygame.sprite.Sprite):
         
         #Faz o jogador cair, simula o efeito da aceleração da gravidade
         self.rect.centery += self.gravidade
-        self.gravidade += 1
+        self.gravidade += 0.3
 
 
         #Não deixa o jogador passar do chão
@@ -162,18 +180,11 @@ class Jogador(pygame.sprite.Sprite):
             self.rect.centery = 560
         
     def pulo_jogador (self, event):
-
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 #Faz o jogador pular
                 if self.rect.bottom >= 560:
                     self.gravidade = -20
-    
-    def colisao_jogador(self,  inimigo):
-        #Fazer a colisao do jogador com os inimigos
-        if pygame.sprite.collide_mask(self, inimigo):
-            self.vidas -= 1
-            return True
 
 class Inimigo (pygame.sprite.Sprite):
     def __init__(self, em_cima):
@@ -196,10 +207,10 @@ class Inimigo (pygame.sprite.Sprite):
         self.rect = self.mask.get_rect()
         self.rect.centery = posicao_y
         self.rect.centerx = 1280
-
+        self.rect.centery = 600
     
     def update(self):
-        self.rect.centerx -= 5
+        self.rect.centerx += 3
 
-        if self.rect.centerx <= -100:
-            self.rect.centerx = 1280
+        if self.rect.centerx > 1280:
+            self.kill()
