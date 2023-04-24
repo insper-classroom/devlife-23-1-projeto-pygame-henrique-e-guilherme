@@ -214,14 +214,13 @@ class Inimigo (pygame.sprite.Sprite):
         self.rect.centerx = 1280
         self.rect.centery = 600
 
-        self.vidas = 1
+        self.vidas = 3
     
     def update(self):
         self.rect.centerx -= 3
 
         if self.rect.centerx <= -100 or self.vidas <= 0:
-            self.kill()
-
+            self.rect.centerx = 1300
 
 class Tiro (pygame.sprite.Sprite):
     def __init__(self):
