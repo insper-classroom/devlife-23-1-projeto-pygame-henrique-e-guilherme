@@ -96,7 +96,7 @@ class TelaJogo():
                 self.lista_de_inimigos.remove(inimigo)
 
         #Spawna inimigos a cada 2 segundos
-        if relogio % 2 == 0 and self.pode:
+        if relogio % 2 == 0 and self.pode and relogio != 0:
             self.spawn_inimigo()
             self.pode = False
             self.tempo = relogio
