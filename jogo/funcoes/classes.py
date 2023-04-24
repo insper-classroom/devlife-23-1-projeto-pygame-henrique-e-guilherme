@@ -266,3 +266,6 @@ class Tiro (pygame.sprite.Sprite):
 
         if self.rect.centerx > 1280:
             self.kill()
+
+
+print ('teste')
