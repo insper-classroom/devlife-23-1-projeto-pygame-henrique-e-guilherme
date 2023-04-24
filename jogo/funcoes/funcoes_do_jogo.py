@@ -20,6 +20,7 @@ def inicializa():
     }
     return assets
 
+#teste
 
 def game_loop():
     assets = inicializa()
