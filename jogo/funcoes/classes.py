@@ -38,9 +38,9 @@ class TelaInicial():
 
     def update(self, assets):
         if not self.musica_tela_inicial_tocando:
-            # pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
-            # pygame.mixer_music.set_volume(0.3)
-            # pygame.mixer_music.play()
+            pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
+            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.play()
             self.musica_tela_inicial_tocando = True
 
         for event in pygame.event.get():
@@ -134,7 +134,7 @@ class TelaJogo():
     def __init__(self, assets):
 
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela Jogo', True, (255, 0, 0))
+        self.texto = self.fonte.render('Tela Jogo', True, (0, 255, 0))
         self.dicionario = assets
         #Adicionei essas imagens so para testar e dps mudar
         self.fundo = assets['fundo']
@@ -148,8 +148,6 @@ class TelaJogo():
         self.timer_imune_fim = 0
 
         self.tem_que_trocar = False
-        self.tempo = 0
-        self.pode = True
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
 
         #fonte: https://youtu.be/ARt6DLP38-Y
@@ -158,6 +156,11 @@ class TelaJogo():
 
         self.scroll_chao = 0
         self.tiles_chao = 1280 // self.chao.get_width() + 1
+
+        self.lista_de_inimigos = []
+        self.spawn_inimigo()
+        self.tempo = 0
+        self.pode = True
 
         self.jogador = Jogador()
         self.tiros = pygame.sprite.Group()
@@ -199,6 +202,9 @@ class TelaJogo():
         #High score
         self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 5))
 
+        for inimigo in self.lista_de_inimigos:
+            inimigo.update()
+            self.tela.blit(inimigo.image, inimigo.rect)
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
 
@@ -214,9 +220,9 @@ class TelaJogo():
 
     def update(self, assets):
         if not self.musica_jogo_tocando:
-            # pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
-            # pygame.mixer_music.set_volume(0.2)
-            # pygame.mixer_music.play()
+            pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+            pygame.mixer_music.set_volume(0.2)
+            pygame.mixer_music.play()
             self.musica_jogo_tocando = True
 
 
@@ -224,13 +230,9 @@ class TelaJogo():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_TAB:
-                    #a condicao de trocar tela vira true
-                    self.tem_que_trocar = True
-                elif event.key == pygame.K_w:
-                    self.tiros.add(Tiro(self.jogador.rect.centery))
-                    Tiro(self.jogador.rect.centery).som.play()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.tiros.add(Tiro(self.jogador.rect.centery))
+                Tiro(self.jogador.rect.centery).som.play()
             self.jogador.pulo_jogador(event)
         
         relogio = pygame.time.get_ticks() // 1000
@@ -272,19 +274,18 @@ class TelaJogo():
             
         return True
     
-    def troca_tela(self):
-        if self.tem_que_trocar:
-            return TelaInicial(self.dicionario)
-        else:
-            return self
-
     def spawn_inimigo(self):
         if random.randint(0, 1):
             condicao = True
         else: condicao = False
         self.lista_de_inimigos.append(Inimigo(condicao))
-
-
+    
+    def troca_tela(self):
+        if self.tem_que_trocar:
+            return TelaGameOver(self.dicionario)
+        else:
+            return self
+        
 
 class Jogador(pygame.sprite.Sprite):
     def __init__(self):
@@ -302,6 +303,13 @@ class Jogador(pygame.sprite.Sprite):
         self.image = pygame.image.load('jogo/assets/knight_.png').convert_alpha()
 
         self.rect = self.lista_sprites[0].get_rect()
+
+        self.dano_som = pygame.mixer.Sound('jogo/assets/dano_som.mp3')
+        self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
+
+        self.vidas = 3
+
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.dano_som = pygame.mixer.Sound('jogo/assets/dano_som.mp3')
         self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
@@ -345,6 +353,7 @@ class Jogador(pygame.sprite.Sprite):
     def pulo_jogador (self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+
                 #Faz o jogador pular
                 if self.rect.bottom >= 600:
                     self.gravidade = -10
