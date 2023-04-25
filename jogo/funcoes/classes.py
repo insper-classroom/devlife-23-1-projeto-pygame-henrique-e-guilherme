@@ -360,7 +360,7 @@ class Jogador(pygame.sprite.Sprite):
             if event.key == pygame.K_SPACE:
 
                 #Faz o jogador pular
-                if self.rect.bottom >= 560:
+                if self.rect.bottom >= 600:
                     self.gravidade = -10
     
     def colisao_jogador(self,  inimigo):
