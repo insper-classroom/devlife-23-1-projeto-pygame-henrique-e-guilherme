@@ -1,6 +1,37 @@
+html {
+    scroll-behavior: smooth;
+  }
+
 .header {
     text-align: center;
     margin: 10px;
+    background-color: black;
+}
+
+.logo{
+    text-align: center;
+    background-color: black;
+}
+
+.botoes-header{
+    text-align: center;
+    background-color: rgb(255, 255, 255);
+}
+
+
+.botoes-header li {
+    color: blue;
+    display: inline-block;
+    margin-right: 70px;
+    font-weight: 400;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 10px;
+}
+
+.botoes-header li a:hover {
+    background-color: white;
+    
 }
 
 .titulo {
