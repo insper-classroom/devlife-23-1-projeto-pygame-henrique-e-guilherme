@@ -21,6 +21,7 @@ def inicializa():
         'fundo': pygame.transform.scale((pygame.image.load('jogo/assets/Red Sky.png').convert_alpha()), (1280, 720)),
         'ground': pygame.transform.scale((pygame.image.load('jogo/assets/ground_provisorio.png').convert_alpha()), (1280, 300)),
 
+        'highscore': 0,
     }
     return assets
 
@@ -28,7 +29,7 @@ def inicializa():
 def game_loop():
     assets = inicializa()
     tela_atual = TelaInicial(assets)
-    while tela_atual.update(): 
+    while tela_atual.update(assets): 
         tela_atual = tela_atual.troca_tela()
         tela_atual.desenha()
 

@@ -36,7 +36,7 @@ class TelaInicial():
         self.tela.blit(self.texto2, (self.texto2_pos_x, 368))
         pygame.display.update()
 
-    def update(self):
+    def update(self, assets):
         if not self.musica_tela_inicial_tocando:
             pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
             pygame.mixer_music.set_volume(0.3)
@@ -108,7 +108,7 @@ class TelaInstrucoes():
         self.tela.blit(self.texto7, (self.texto7_pos_x, 550))
         pygame.display.update()
 
-    def update(self):
+    def update(self, assets):
         if not self.musica_tela_inicial_tocando:
             pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
             pygame.mixer_music.set_volume(0.3)
@@ -166,6 +166,10 @@ class TelaJogo():
         #Texto das vidas
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
+        self.pontuacao = 0
+        self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
+        self.timer_pontuacao_comeco = 0
+        self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 255, 255))
 
 
     def desenha(self):
@@ -188,6 +192,12 @@ class TelaJogo():
         #Vidas
         self.tela.blit(self.texto_vidas, (7, 5))
 
+        #Score
+        self.tela.blit(self.texto_pontuacao, (1273 - self.texto_pontuacao.get_width(), 30))
+
+        #High score
+        self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 5))
+
         for inimigo in self.lista_de_inimigos:
             inimigo.update()
             self.tela.blit(inimigo.image, inimigo.rect)
@@ -201,7 +211,7 @@ class TelaJogo():
 
         pygame.display.update()
 
-    def update(self):
+    def update(self, assets):
         if not self.musica_jogo_tocando:
             pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
             pygame.mixer_music.set_volume(0.2)
@@ -229,6 +239,8 @@ class TelaJogo():
             if pygame.sprite.spritecollide(inimigo, self.tiros, True):
                 self.lista_de_inimigos.remove(inimigo)
                 Jogador().pontuou_som.play()
+                self.pontuacao += 50
+                self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
 
         #Spawna inimigos a cada 2 segundos
         if relogio % 2 == 0 and self.pode and relogio != 0:
@@ -242,6 +254,15 @@ class TelaJogo():
 
         if self.jogador.vidas <=0:
             self.tem_que_trocar = True
+
+        self.timer_pontuacao_fim = pygame.time.get_ticks() // 1000
+        if self.timer_pontuacao_fim - self.timer_pontuacao_comeco >= 3:
+            self.pontuacao += 5
+            self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
+            self.timer_pontuacao_comeco = self.timer_pontuacao_fim
+        if self.pontuacao > assets['highscore']:
+            assets['highscore'] = self.pontuacao
+            self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 255, 255))
             
         return True
     
@@ -392,7 +413,7 @@ class TelaGameOver():
 
         pygame.display.update()
 
-    def update(self):
+    def update(self, assets):
         if not self.musica_tela_jogo_tocando:
             pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
             pygame.mixer_music.set_volume(0.3)
@@ -416,3 +437,5 @@ class TelaGameOver():
             return TelaJogo(self.dicionario)
         else:
             return self
+        
+        
