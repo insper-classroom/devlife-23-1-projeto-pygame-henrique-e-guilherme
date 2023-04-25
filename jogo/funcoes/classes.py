@@ -36,7 +36,79 @@ class TelaInicial():
         self.tela.blit(self.texto2, (self.texto2_pos_x, 368))
         pygame.display.update()
 
-    def update(self):
+    def update(self, assets):
+        if not self.musica_tela_inicial_tocando:
+            # pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
+            # pygame.mixer_music.set_volume(0.3)
+            # pygame.mixer_music.play()
+            self.musica_tela_inicial_tocando = True
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.tem_que_trocar = True
+        return True
+    
+    def troca_tela(self):
+        if self.tem_que_trocar:
+            return TelaInstrucoes(self.dicionario)
+        else:
+            return self
+        
+class TelaInstrucoes():
+    def __init__(self, assets):
+        self.dicionario = assets
+        self.tela = assets['tela']
+        self.fonte = pygame.font.Font(assets['fonte'], 50)
+        self.texto = self.fonte.render('Tela instrucoes', True, (0, 255, 0))
+        self.fonte2 = assets['fonte2']
+        self.fonte2_grande = assets['fonte2_grande']
+
+        self.texto2 = self.fonte2_grande.render('COMO JOGAR:', True, (255, 230, 0))
+        self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+
+        self.texto3 = self.fonte2.render('- Pressione "ESPAÇO" para pular', True, (255, 230, 0))
+        self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
+
+        self.texto4 = self.fonte2.render('- Pressione "BOTÃO MOUSE 1" para atirar', True, (255, 230, 0))
+        self.texto4_pos_x = 640 - self.texto4.get_rect()[2] / 2
+
+        self.texto5 = self.fonte2.render('- Sobreviva por mais tempo para obter pontos', True, (255, 230, 0))
+        self.texto5_pos_x = 640 - self.texto5.get_rect()[2] / 2
+
+        self.texto6 = self.fonte2.render('- Mate monstros para obter pontos', True, (255, 230, 0))
+        self.texto6_pos_x = 640 - self.texto6.get_rect()[2] / 2
+
+        self.texto7 = self.fonte2.render('PRESSIONE "ESPAÇO" PARA CONTINUAR', True, (255, 230, 0))
+        self.texto7_pos_x = 640 - self.texto7.get_rect()[2] / 2
+
+        self.fundo = assets['fundo']
+        self.chao = assets['ground']
+
+        self.musica_tela_inicial_tocando = True
+
+        self.tem_que_trocar = False
+
+    def desenha(self):
+        self.tela.fill((255, 255, 255))
+
+        self.tela.blit(self.fundo, (0, 0))
+        self.tela.blit(self.chao, (0, 620))
+
+        self.tela.blit(self.texto, (300, 0))
+
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 100))
+        self.tela.blit(self.texto3, (self.texto3_pos_x, 220))
+        self.tela.blit(self.texto4, (self.texto4_pos_x, 290))
+        self.tela.blit(self.texto5, (self.texto5_pos_x, 360))
+        self.tela.blit(self.texto6, (self.texto6_pos_x, 430))
+        self.tela.blit(self.texto7, (self.texto7_pos_x, 550))
+        pygame.display.update()
+
+    def update(self, assets):
         if not self.musica_tela_inicial_tocando:
             # pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
             # pygame.mixer_music.set_volume(0.3)
@@ -90,15 +162,15 @@ class TelaJogo():
         self.jogador = Jogador()
         self.tiros = pygame.sprite.Group()
 
-        self.inimigos = pygame.sprite.Group()
-        self.inimigos.add(Inimigo(False))
-        self.timer_spawn_comeco = 0
-
         self.musica_jogo_tocando = False
 
         #Texto das vidas
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
+        self.pontuacao = 0
+        self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
+        self.timer_pontuacao_comeco = 0
+        self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 255, 255))
 
 
     def desenha(self):
@@ -121,11 +193,17 @@ class TelaJogo():
         #Vidas
         self.tela.blit(self.texto_vidas, (7, 5))
 
-        self.inimigos.update()
-        self.inimigos.draw(self.tela)
+        #Score
+        self.tela.blit(self.texto_pontuacao, (1273 - self.texto_pontuacao.get_width(), 30))
+
+        #High score
+        self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 5))
 
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
+
+        self.tiros.update()
+        self.tiros.draw(self.tela)
 
         self.tiros.update()
         self.tiros.draw(self.tela)
@@ -134,12 +212,13 @@ class TelaJogo():
 
         pygame.display.update()
 
-    def update(self):
-        # if not self.musica_jogo_tocando:
-        #     pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
-        #     pygame.mixer_music.set_volume(0.2)
-        #     pygame.mixer_music.play()
-        #     self.musica_jogo_tocando = True
+    def update(self, assets):
+        if not self.musica_jogo_tocando:
+            # pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+            # pygame.mixer_music.set_volume(0.2)
+            # pygame.mixer_music.play()
+            self.musica_jogo_tocando = True
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -154,27 +233,43 @@ class TelaJogo():
                     Tiro(self.jogador.rect.centery).som.play()
             self.jogador.pulo_jogador(event)
         
-        #colisao com monstro
-        if pygame.sprite.spritecollide(self.jogador, self.inimigos, True):
-            if not self.imune:
-                self.jogador.vidas -= 1
-                self.jogador.dano_som.play()
-                self.imune = True
+        relogio = pygame.time.get_ticks() // 1000
+
+        #Fiz essa gambiarra pra remover o inimigo da lista de inimigos e ter a colisão perfeita (máscara)
+        for inimigo in self.lista_de_inimigos:
+            if self.jogador.colisao_jogador(inimigo):
+                self.lista_de_inimigos.remove(inimigo)
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
-                self.timer_imune_comeco = pygame.time.get_ticks()
-            else:
-                self.timer_imune_fim = pygame.time.get_ticks()
-                if self.timer_imune_fim - self.timer_imune_comeco > 3000:
-                    self.imune = False
-        
-        if pygame.sprite.groupcollide(self.inimigos, self.tiros, True, True):
-            self.jogador.pontuou_som.play()
+            if inimigo.rect.centerx <= -100:
+                self.lista_de_inimigos.remove(inimigo)
+            if pygame.sprite.spritecollide(inimigo, self.tiros, True):
+                self.lista_de_inimigos.remove(inimigo)
+                Jogador().pontuou_som.play()
+                self.pontuacao += 50
+                self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
 
-        self.timer_spawn_fim = pygame.time.get_ticks()
-        if self.timer_spawn_fim - self.timer_spawn_comeco > 5000:
-            self.inimigos.add(Inimigo(False))
-            self.timer_spawn_comeco = self.timer_spawn_fim
+        #Spawna inimigos a cada 2 segundos
+        if relogio % 2 == 0 and self.pode and relogio != 0:
+            self.spawn_inimigo()
+            self.pode = False
+            self.tempo = relogio
+            
+        #Faz spawnar a cada 1 segundo
+        if self.tempo != relogio:
+            self.pode = True
 
+        if self.jogador.vidas <=0:
+            self.tem_que_trocar = True
+
+        self.timer_pontuacao_fim = pygame.time.get_ticks() // 1000
+        if self.timer_pontuacao_fim - self.timer_pontuacao_comeco >= 3:
+            self.pontuacao += 5
+            self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
+            self.timer_pontuacao_comeco = self.timer_pontuacao_fim
+        if self.pontuacao > assets['highscore']:
+            assets['highscore'] = self.pontuacao
+            self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 255, 255))
+            
         return True
     
     def troca_tela(self):
@@ -252,7 +347,14 @@ class Jogador(pygame.sprite.Sprite):
             if event.key == pygame.K_SPACE:
                 #Faz o jogador pular
                 if self.rect.bottom >= 600:
-                    self.gravidade = -12
+                    self.gravidade = -10
+    
+    def colisao_jogador(self,  inimigo):
+        #Fazer a colisao do jogador com os inimigos
+        if pygame.sprite.collide_mask(self, inimigo):
+            self.vidas -= 1
+            self.dano_som.play()
+            return True
 
 class Inimigo (pygame.sprite.Sprite):
     def __init__(self, em_cima):
@@ -275,20 +377,18 @@ class Inimigo (pygame.sprite.Sprite):
         self.rect = self.mask.get_rect()
         self.rect.centery = posicao_y
         self.rect.centerx = 1280
-        self.rect.centery = 600
 
-        self.vidas = 3
-    
     def update(self):
         self.rect.centerx -= 3
 
-        if self.rect.centerx <= -100 or self.vidas <= 0:
-            self.rect.centerx = 1300
+        if self.rect.centerx <= -100:
+            self.kill()
 
 class Tiro (pygame.sprite.Sprite):
     def __init__(self, jogador_center_y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
+        self.image = pygame.image.load('jogo/assets/tiro.png').convert_alpha()
+        self.image = pygame.transform.scale_by(self.image, 0.5)
         self.rect = self.image.get_rect()
 
         self.rect.centery = jogador_center_y
@@ -296,12 +396,70 @@ class Tiro (pygame.sprite.Sprite):
 
         self.som = pygame.mixer.Sound('jogo/assets/tiro_som.mp3')
 
-    
     def update(self):
         self.rect.centerx += 3
 
         if self.rect.centerx > 1280:
             self.kill()
+
+class TelaGameOver():
+    def __init__(self, assets):
+        self.dicionario = assets
+        self.tela = assets['tela']
+        self.fonte = pygame.font.Font(assets['fonte'], 50)
+        self.texto = self.fonte.render('Tela game over', True, (0, 255, 0))
+        self.fonte2 = assets['fonte2']
+        self.fonte2_grande = assets['fonte2_grande']
+        self.fonte2_xgrande = assets['fonte2_xgrande']
+
+        self.texto2 = self.fonte2_xgrande.render('GAME OVER', True, (255, 41, 41))
+        self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+
+        self.texto3 = self.fonte2.render('Pressione "ESPAÇO" para reiniciar ou "ESC" PARA SAIR', True, (250, 250, 250))
+        self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
+
+        self.fundo = assets['fundo']
+        self.chao = assets['ground']
+
+        self.musica_tela_jogo_tocando = True
+
+        self.tem_que_trocar = False
+
+    def desenha(self):
+        self.tela.fill((0, 0, 0))
+
+        self.tela.blit(self.texto, (300, 0))
+
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 300))
+        self.tela.blit(self.texto3, (self.texto3_pos_x, 400))
+
+        pygame.display.update()
+
+    def update(self, assets):
+        if not self.musica_tela_jogo_tocando:
+            pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.play()
+            self.musica_tela_inicial_tocando = True
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.tem_que_trocar = True
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    return False
+        return True
+    
+    def troca_tela(self):
+        if self.tem_que_trocar:
+            return TelaJogo(self.dicionario)
+        else:
+            return self
+        
 
 
 #Fonte: https://www.youtube.com/watch?v=nXOVcOBqFwM&ab_channel=CodingWithRuss

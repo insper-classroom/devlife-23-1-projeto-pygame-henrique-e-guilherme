@@ -31,7 +31,7 @@ def inicializa():
 def game_loop():
     assets = inicializa()
     tela_atual = TelaInicial(assets)
-    while tela_atual.update(): 
+    while tela_atual.update(assets): 
         tela_atual = tela_atual.troca_tela()
         tela_atual.desenha()
 
