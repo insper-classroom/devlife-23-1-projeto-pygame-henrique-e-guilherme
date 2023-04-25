@@ -23,6 +23,7 @@ def inicializa():
         'ground': pygame.transform.scale((pygame.image.load('jogo/assets/ground_provisorio.png').convert_alpha()), (1280, 300)),
 
         'highscore': 0,
+        'pontuacao': 0,
     }
     return assets
 
