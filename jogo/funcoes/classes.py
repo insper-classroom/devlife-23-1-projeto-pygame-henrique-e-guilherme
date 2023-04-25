@@ -91,7 +91,7 @@ class TelaJogo():
         self.tiros = pygame.sprite.Group()
 
         self.inimigos = pygame.sprite.Group()
-        self.inimigos.add(Inimigo())
+        self.inimigos.add(Inimigo(False))
         self.timer_spawn_comeco = 0
 
         self.musica_jogo_tocando = False
@@ -172,7 +172,7 @@ class TelaJogo():
 
         self.timer_spawn_fim = pygame.time.get_ticks()
         if self.timer_spawn_fim - self.timer_spawn_comeco > 5000:
-            self.inimigos.add(Inimigo())
+            self.inimigos.add(Inimigo(False))
             self.timer_spawn_comeco = self.timer_spawn_fim
 
         return True
@@ -250,20 +250,27 @@ class Jogador(pygame.sprite.Sprite):
     def pulo_jogador (self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-
                 #Faz o jogador pular
                 if self.rect.bottom >= 600:
                     self.gravidade = -15
 
 class Inimigo (pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, em_cima):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
-        self.image = pygame.transform.scale_by(self.image, 4)
-        self.image = pygame.transform.flip(self.image, True, False)
+        #Tipo de Inimigo
+        if em_cima:
+            posicao_y = 400
+            self.image = pygame.image.load('jogo/assets/ghost_provisorio.png').convert_alpha()
+            
+        else:
+            posicao_y = 595
+            self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
+            self.image = pygame.transform.flip(self.image, True, False)
 
-        self.rect = self.image.get_rect()
+        
+        self.image = pygame.transform.scale_by(self.image, 4)
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.rect = self.mask.get_rect()
         self.rect.centery = posicao_y
