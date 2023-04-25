@@ -1,6 +1,7 @@
 import pygame
 from classes import TelaInicial, TelaJogo
 
+
 def inicializa():
     pygame.init()
     tela = pygame.display.set_mode((1280,720))
@@ -25,6 +26,7 @@ def inicializa():
     }
     return assets
 
+#teste
 
 def game_loop():
     assets = inicializa()
