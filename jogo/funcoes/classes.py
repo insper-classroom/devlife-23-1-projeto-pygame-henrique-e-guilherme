@@ -1,4 +1,6 @@
 import pygame
+import random
+
 
 
 class TelaInicial():
@@ -60,7 +62,7 @@ class TelaJogo():
     def __init__(self, assets):
 
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela Jogo', True, (0, 255, 0))
+        self.texto = self.fonte.render('Tela Jogo', True, (255, 0, 0))
         self.dicionario = assets
         #Adicionei essas imagens so para testar e dps mudar
         self.fundo = assets['fundo']
@@ -74,6 +76,8 @@ class TelaJogo():
         self.timer_imune_fim = 0
 
         self.tem_que_trocar = False
+        self.tempo = 0
+        self.pode = True
         self.Clock = pygame.time.Clock() #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
 
         #fonte: https://youtu.be/ARt6DLP38-Y
@@ -179,6 +183,14 @@ class TelaJogo():
         else:
             return self
 
+    def spawn_inimigo(self):
+        if random.randint(0, 1):
+            condicao = True
+        else: condicao = False
+        self.lista_de_inimigos.append(Inimigo(condicao))
+
+
+
 class Jogador(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -253,6 +265,8 @@ class Inimigo (pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
 
+        self.rect = self.mask.get_rect()
+        self.rect.centery = posicao_y
         self.rect.centerx = 1280
         self.rect.centery = 600
 
@@ -275,6 +289,7 @@ class Tiro (pygame.sprite.Sprite):
 
         self.som = pygame.mixer.Sound('jogo/assets/tiro_som.mp3')
 
+    
     def update(self):
         self.rect.centerx += 3
 
