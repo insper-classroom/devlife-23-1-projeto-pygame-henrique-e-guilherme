@@ -384,20 +384,34 @@ class Jogador(pygame.sprite.Sprite):
 class Inimigo (pygame.sprite.Sprite):
     def __init__(self, em_cima):
         pygame.sprite.Sprite.__init__(self)
+        self.sprites = SpriteSheet('jogo/assets/demonio_sprite_sheet.png')
+        self.lista_sprites = []
 
+        self.demonio = False
+        self.frame_atual = 0
+        self.cooldown_animacao = 100
         #Tipo de Inimigo
         if em_cima:
             posicao_y = 400
             self.image = pygame.image.load('jogo/assets/ghost_provisorio.png').convert_alpha()
+            self.sprites = SpriteSheet('jogo/assets/ghost_sprite_sheet.png')
+            for contador in range(4):
+                self.lista_sprites.append(self.sprites.corta_imagem(contador, 20, 22, 4))
+
             
         else:
             posicao_y = 595
             self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
             self.image = pygame.transform.flip(self.image, True, False)
+            for contador in range(4):
+                self.lista_sprites.append(self.sprites.corta_imagem(contador, 24 , 24, 4))
+            self.demonio = True
 
-        
+
+
         self.image = pygame.transform.scale_by(self.image, 4)
         self.mask = pygame.mask.from_surface(self.image)
+        self.tempo = pygame.time.get_ticks()
 
         self.rect = self.mask.get_rect()
         self.rect.centery = posicao_y
@@ -408,6 +422,14 @@ class Inimigo (pygame.sprite.Sprite):
 
         if self.rect.centerx <= -100:
             self.kill()
+        tempo_atual = pygame.time.get_ticks()
+        # if self.demonio:
+        if tempo_atual - self.tempo > self.cooldown_animacao:
+            self.tempo = tempo_atual
+            self.frame_atual += 1
+        if self.frame_atual >= len(self.lista_sprites):
+            self.frame_atual = 0
+        self.image = self.lista_sprites[self.frame_atual]
 
 class Tiro (pygame.sprite.Sprite):
     def __init__(self, jogador_center_y):
