@@ -252,7 +252,7 @@ class Jogador(pygame.sprite.Sprite):
             if event.key == pygame.K_SPACE:
                 #Faz o jogador pular
                 if self.rect.bottom >= 600:
-                    self.gravidade = -15
+                    self.gravidade = -12
 
 class Inimigo (pygame.sprite.Sprite):
     def __init__(self, em_cima):
