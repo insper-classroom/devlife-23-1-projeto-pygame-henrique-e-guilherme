@@ -158,7 +158,6 @@ class TelaJogo():
         self.tiles_chao = 1280 // self.chao.get_width() + 1
 
         self.lista_de_inimigos = []
-        self.spawn_inimigo()
         self.tempo = 0
         self.pode = True
 
@@ -171,9 +170,12 @@ class TelaJogo():
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
         self.pontuacao = 0
-        self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
+        self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
         self.timer_pontuacao_comeco = 0
-        self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 255, 255))
+        self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 230, 0))
+
+        self.timer_recarga_municao_comeco = 0
+        self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
 
 
     def desenha(self):
@@ -194,13 +196,13 @@ class TelaJogo():
         self.tela.blit(self.texto, (250, 0))
 
         #Vidas
-        self.tela.blit(self.texto_vidas, (7, 5))
+        self.tela.blit(self.texto_vidas, (7, 0))
 
         #Score
-        self.tela.blit(self.texto_pontuacao, (1273 - self.texto_pontuacao.get_width(), 30))
+        self.tela.blit(self.texto_pontuacao, (1273 - self.texto_pontuacao.get_width(), 40))
 
         #High score
-        self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 5))
+        self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 10))
 
         for inimigo in self.lista_de_inimigos:
             inimigo.update()
@@ -215,6 +217,8 @@ class TelaJogo():
         self.tiros.draw(self.tela)
 
         self.Clock.tick(60) #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
+
+        self.tela.blit(self.texto_municao, (7, 40))
 
         pygame.display.update()
 
@@ -231,8 +235,11 @@ class TelaJogo():
                 pygame.quit()
                 return False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                self.tiros.add(Tiro(self.jogador.rect.centery))
-                Tiro(self.jogador.rect.centery).som.play()
+                if self.jogador.municoes > 0:
+                    self.tiros.add(Tiro(self.jogador.rect.centery))
+                    Tiro(self.jogador.rect.centery).som.play()
+                    self.jogador.municoes -= 1
+                    self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
             self.jogador.pulo_jogador(event)
         
         relogio = pygame.time.get_ticks() // 1000
@@ -248,7 +255,7 @@ class TelaJogo():
                 self.lista_de_inimigos.remove(inimigo)
                 Jogador().pontuou_som.play()
                 self.pontuacao += 50
-                self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
+                self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
 
         #Spawna inimigos a cada 2 segundos
         if relogio % 2 == 0 and self.pode and relogio != 0:
@@ -262,15 +269,22 @@ class TelaJogo():
 
         if self.jogador.vidas <=0:
             self.tem_que_trocar = True
-
+            assets['pontuacao'] = self.pontuacao
+ 
         self.timer_pontuacao_fim = pygame.time.get_ticks() // 1000
         if self.timer_pontuacao_fim - self.timer_pontuacao_comeco >= 3:
             self.pontuacao += 5
-            self.texto_pontuacao = self.fonte2.render('Score: ' + str(self.pontuacao), True, (255, 255, 255))
+            self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
             self.timer_pontuacao_comeco = self.timer_pontuacao_fim
         if self.pontuacao > assets['highscore']:
             assets['highscore'] = self.pontuacao
-            self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 255, 255))
+            self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 230, 0))
+
+        self.timer_recarga_municao_fim = pygame.time.get_ticks() // 1000
+        if self.timer_recarga_municao_fim - self.timer_recarga_municao_comeco >= 7 and self.jogador.municoes < 3:
+            self.jogador.municoes += 1
+            self.timer_recarga_municao_comeco = self.timer_recarga_municao_fim
+            self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
             
         return True
     
@@ -315,6 +329,8 @@ class Jogador(pygame.sprite.Sprite):
         self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
 
         self.vidas = 3
+
+        self.municoes = 3
 
         #Coordenadas
         self.rect.centerx = 80
@@ -427,6 +443,12 @@ class TelaGameOver():
         self.texto3 = self.fonte2.render('Pressione "ESPAÇO" para reiniciar ou "ESC" PARA SAIR', True, (250, 250, 250))
         self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
 
+        self.texto4 = self.fonte2.render('High score: ' + str(assets['highscore']), True, (250, 250, 250))
+        self.texto4_pos_x = 640 - self.texto4.get_rect()[2] / 2
+        
+        self.texto5 = self.fonte2.render('Sua pontuação: ' + str(assets['pontuacao']), True, (250, 250, 250))
+        self.texto5_pos_x = 640 - self.texto5.get_rect()[2] / 2
+
         self.fundo = assets['fundo']
         self.chao = assets['ground']
 
@@ -439,8 +461,11 @@ class TelaGameOver():
 
         self.tela.blit(self.texto, (300, 0))
 
-        self.tela.blit(self.texto2, (self.texto2_pos_x, 300))
-        self.tela.blit(self.texto3, (self.texto3_pos_x, 400))
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 250))
+        self.tela.blit(self.texto4, (self.texto4_pos_x, 350))
+        self.tela.blit(self.texto5, (self.texto5_pos_x, 400))
+        self.tela.blit(self.texto3, (self.texto3_pos_x, 470))
+        
 
         pygame.display.update()
 
