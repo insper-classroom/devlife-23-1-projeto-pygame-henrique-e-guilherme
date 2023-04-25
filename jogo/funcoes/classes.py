@@ -401,7 +401,8 @@ class Inimigo (pygame.sprite.Sprite):
 class Tiro (pygame.sprite.Sprite):
     def __init__(self, jogador_center_y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('jogo/assets/inimigo_provisorio.png').convert_alpha()
+        self.image = pygame.image.load('jogo/assets/tiro.png').convert_alpha()
+        self.image = pygame.transform.scale_by(self.image, 0.5)
         self.rect = self.image.get_rect()
 
         self.rect.centery = jogador_center_y
@@ -473,9 +474,7 @@ class TelaGameOver():
         else:
             return self
         
-print ('oi')
-        
-        
+
 
 #Fonte: https://www.youtube.com/watch?v=nXOVcOBqFwM&ab_channel=CodingWithRuss
 class SpriteSheet:
