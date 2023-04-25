@@ -1,8 +1,6 @@
 import pygame
 
 
-
-
 class TelaInicial():
     def __init__(self, assets):
         self.dicionario = assets
@@ -38,9 +36,9 @@ class TelaInicial():
 
     def update(self):
         if not self.musica_tela_inicial_tocando:
-            pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
-            pygame.mixer_music.set_volume(0.3)
-            pygame.mixer_music.play()
+            # pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
+            # pygame.mixer_music.set_volume(0.3)
+            # pygame.mixer_music.play()
             self.musica_tela_inicial_tocando = True
 
         for event in pygame.event.get():
@@ -133,11 +131,11 @@ class TelaJogo():
         pygame.display.update()
 
     def update(self):
-        if not self.musica_jogo_tocando:
-            pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
-            pygame.mixer_music.set_volume(0.2)
-            pygame.mixer_music.play()
-            self.musica_jogo_tocando = True
+        # if not self.musica_jogo_tocando:
+        #     pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+        #     pygame.mixer_music.set_volume(0.2)
+        #     pygame.mixer_music.play()
+        #     self.musica_jogo_tocando = True
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -153,7 +151,7 @@ class TelaJogo():
             self.jogador.pulo_jogador(event)
         
         #colisao com monstro
-        if pygame.sprite.spritecollide(self.jogador, self.inimigos, False):
+        if pygame.sprite.spritecollide(self.jogador, self.inimigos, True):
             if not self.imune:
                 self.jogador.vidas -= 1
                 self.jogador.dano_som.play()
@@ -186,9 +184,17 @@ class Jogador(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         #Adicionei essas imagens so para testar e dps mudar
         #Cria retangulo e aumenta a imagem
-        self.image = pygame.image.load('jogo/assets/jogador_provisorio.png').convert_alpha()
-        self.image = pygame.transform.scale_by(self.image, 4)
-        self.rect = self.image.get_rect()
+        self.sprites = SpriteSheet('jogo/assets/knight_.png')
+        self.lista_sprites = []
+        for contador in range(4):
+            self.lista_sprites.append(self.sprites.corta_imagem(contador, 24 , 24, 4))
+
+        self.frame_atual = 0
+        self.cooldown_animacao = 100
+
+        self.image = pygame.image.load('jogo/assets/knight_.png').convert_alpha()
+
+        self.rect = self.lista_sprites[0].get_rect()
 
         self.dano_som = pygame.mixer.Sound('jogo/assets/dano_som.mp3')
         self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
@@ -196,36 +202,45 @@ class Jogador(pygame.sprite.Sprite):
         self.vidas = 3
 
         #Coordenadas
-        self.rect.centerx = 60
-        self.rect.centery = 560
+        self.rect.centerx = 80
+        self.rect.centery = 600
 
-        self.x = 0
-        self.delta_t = 0
         #Velocidade y
 
         self.vely = -21
 
         #Gravidade
         self.gravidade = 0
+        self.tempo = pygame.time.get_ticks()
 
 
     def update(self):
-        
+
+        tempo_atual = pygame.time.get_ticks()
+        if tempo_atual - self.tempo > self.cooldown_animacao:
+            self.tempo = tempo_atual
+            self.frame_atual += 1
+        if self.frame_atual >= len(self.lista_sprites):
+            self.frame_atual = 0
+        self.image = self.lista_sprites[self.frame_atual]
+
+
+
         #Faz o jogador cair, simula o efeito da aceleração da gravidade
         self.rect.centery += self.gravidade
         self.gravidade += 0.3
 
 
         #Não deixa o jogador passar do chão
-        if self.rect.centery >= 560:
-            self.rect.centery = 560
+        if self.rect.centery >= 600:
+            self.rect.centery = 600
         
     def pulo_jogador (self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
 
                 #Faz o jogador pular
-                if self.rect.bottom >= 560:
+                if self.rect.bottom >= 600:
                     self.gravidade = -15
 
 class Inimigo (pygame.sprite.Sprite):
@@ -249,7 +264,6 @@ class Inimigo (pygame.sprite.Sprite):
         if self.rect.centerx <= -100 or self.vidas <= 0:
             self.rect.centerx = 1300
 
-
 class Tiro (pygame.sprite.Sprite):
     def __init__(self, jogador_center_y):
         pygame.sprite.Sprite.__init__(self)
@@ -268,4 +282,14 @@ class Tiro (pygame.sprite.Sprite):
             self.kill()
 
 
-print ('teste')
+#Fonte: https://www.youtube.com/watch?v=nXOVcOBqFwM&ab_channel=CodingWithRuss
+class SpriteSheet:
+    def __init__(self, imagem):
+        self.sheet = pygame.image.load(imagem).convert_alpha()
+
+    def corta_imagem(self, frame ,altura, largura, escala):
+        imagem = pygame.Surface((largura, altura)).convert_alpha()
+        imagem.blit(self.sheet, (0, 0) , ((frame * largura), 0, largura, altura)) #Ultimo argumento é a área do frame que vai ser cortada
+        imagem = pygame.transform.scale(imagem, (largura*escala, altura*escala)) #Aumenta a imagem
+        imagem.set_colorkey('White') #Define a cor do fundo da imagem para ser transparente
+        return imagem
