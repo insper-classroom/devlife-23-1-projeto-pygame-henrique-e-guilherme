@@ -416,8 +416,8 @@ class Tiro (pygame.sprite.Sprite):
         self.image = pygame.transform.scale_by(self.image, 0.5)
         self.rect = self.image.get_rect()
 
-        self.rect.centery = jogador_center_y
-        self.rect.centerx = 60
+        self.rect.centery = jogador_center_y 
+        self.rect.centerx = 100
 
         self.som = pygame.mixer.Sound('jogo/assets/tiro_som.mp3')
 
