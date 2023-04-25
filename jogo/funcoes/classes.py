@@ -54,6 +54,78 @@ class TelaInicial():
     
     def troca_tela(self):
         if self.tem_que_trocar:
+            return TelaInstrucoes(self.dicionario)
+        else:
+            return self
+        
+class TelaInstrucoes():
+    def __init__(self, assets):
+        self.dicionario = assets
+        self.tela = assets['tela']
+        self.fonte = pygame.font.Font(assets['fonte'], 50)
+        self.texto = self.fonte.render('Tela instrucoes', True, (0, 255, 0))
+        self.fonte2 = assets['fonte2']
+        self.fonte2_grande = assets['fonte2_grande']
+
+        self.texto2 = self.fonte2_grande.render('COMO JOGAR:', True, (255, 230, 0))
+        self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+
+        self.texto3 = self.fonte2.render('- Pressione "ESPAÇO" para pular', True, (255, 230, 0))
+        self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
+
+        self.texto4 = self.fonte2.render('- Pressione "BOTÃO MOUSE 1" para atirar', True, (255, 230, 0))
+        self.texto4_pos_x = 640 - self.texto4.get_rect()[2] / 2
+
+        self.texto5 = self.fonte2.render('- Sobreviva por mais tempo para obter pontos', True, (255, 230, 0))
+        self.texto5_pos_x = 640 - self.texto5.get_rect()[2] / 2
+
+        self.texto6 = self.fonte2.render('- Mate monstros para obter pontos', True, (255, 230, 0))
+        self.texto6_pos_x = 640 - self.texto6.get_rect()[2] / 2
+
+        self.texto7 = self.fonte2.render('PRESSIONE "ESPAÇO" PARA CONTINUAR', True, (255, 230, 0))
+        self.texto7_pos_x = 640 - self.texto7.get_rect()[2] / 2
+
+        self.fundo = assets['fundo']
+        self.chao = assets['ground']
+
+        self.musica_tela_inicial_tocando = True
+
+        self.tem_que_trocar = False
+
+    def desenha(self):
+        self.tela.fill((255, 255, 255))
+
+        self.tela.blit(self.fundo, (0, 0))
+        self.tela.blit(self.chao, (0, 620))
+
+        self.tela.blit(self.texto, (300, 0))
+
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 100))
+        self.tela.blit(self.texto3, (self.texto3_pos_x, 220))
+        self.tela.blit(self.texto4, (self.texto4_pos_x, 290))
+        self.tela.blit(self.texto5, (self.texto5_pos_x, 360))
+        self.tela.blit(self.texto6, (self.texto6_pos_x, 430))
+        self.tela.blit(self.texto7, (self.texto7_pos_x, 550))
+        pygame.display.update()
+
+    def update(self):
+        if not self.musica_tela_inicial_tocando:
+            pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
+            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.play()
+            self.musica_tela_inicial_tocando = True
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.tem_que_trocar = True
+        return True
+    
+    def troca_tela(self):
+        if self.tem_que_trocar:
             return TelaJogo(self.dicionario)
         else:
             return self
@@ -140,13 +212,9 @@ class TelaJogo():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_TAB:
-                    #a condicao de trocar tela vira true
-                    self.tem_que_trocar = True
-                elif event.key == pygame.K_w:
-                    self.tiros.add(Tiro(self.jogador.rect.centery))
-                    Tiro(self.jogador.rect.centery).som.play()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.tiros.add(Tiro(self.jogador.rect.centery))
+                Tiro(self.jogador.rect.centery).som.play()
             self.jogador.pulo_jogador(event)
         
         relogio = pygame.time.get_ticks() // 1000
@@ -172,6 +240,9 @@ class TelaJogo():
         if self.tempo != relogio:
             self.pode = True
 
+        if self.jogador.vidas <=0:
+            self.tem_que_trocar = True
+            
         return True
     
     def spawn_inimigo(self):
@@ -182,7 +253,7 @@ class TelaJogo():
     
     def troca_tela(self):
         if self.tem_que_trocar:
-            return TelaInicial(self.dicionario)
+            return TelaGameOver(self.dicionario)
         else:
             return self
         
@@ -288,3 +359,60 @@ class Tiro (pygame.sprite.Sprite):
         if self.rect.centerx > 1280:
             self.kill()
 
+class TelaGameOver():
+    def __init__(self, assets):
+        self.dicionario = assets
+        self.tela = assets['tela']
+        self.fonte = pygame.font.Font(assets['fonte'], 50)
+        self.texto = self.fonte.render('Tela game over', True, (0, 255, 0))
+        self.fonte2 = assets['fonte2']
+        self.fonte2_grande = assets['fonte2_grande']
+        self.fonte2_xgrande = assets['fonte2_xgrande']
+
+        self.texto2 = self.fonte2_xgrande.render('GAME OVER', True, (255, 41, 41))
+        self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+
+        self.texto3 = self.fonte2.render('Pressione "ESPAÇO" para reiniciar ou "ESC" PARA SAIR', True, (250, 250, 250))
+        self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
+
+        self.fundo = assets['fundo']
+        self.chao = assets['ground']
+
+        self.musica_tela_jogo_tocando = True
+
+        self.tem_que_trocar = False
+
+    def desenha(self):
+        self.tela.fill((0, 0, 0))
+
+        self.tela.blit(self.texto, (300, 0))
+
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 300))
+        self.tela.blit(self.texto3, (self.texto3_pos_x, 400))
+
+        pygame.display.update()
+
+    def update(self):
+        if not self.musica_tela_jogo_tocando:
+            pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.play()
+            self.musica_tela_inicial_tocando = True
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.tem_que_trocar = True
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    return False
+        return True
+    
+    def troca_tela(self):
+        if self.tem_que_trocar:
+            return TelaJogo(self.dicionario)
+        else:
+            return self
