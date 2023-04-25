@@ -244,7 +244,7 @@ class TelaJogo():
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
             if inimigo.rect.centerx <= -100:
                 self.lista_de_inimigos.remove(inimigo)
-            if pygame.sprite.spritecollide(inimigo, self.tiros, True):
+            if pygame.sprite.spritecollide(inimigo, self.tiros, True, pygame.sprite.collide_mask):
                 self.lista_de_inimigos.remove(inimigo)
                 Jogador().pontuou_som.play()
                 self.pontuacao += 50
@@ -355,7 +355,7 @@ class Jogador(pygame.sprite.Sprite):
             if event.key == pygame.K_SPACE:
 
                 #Faz o jogador pular
-                if self.rect.bottom >= 600:
+                if self.rect.bottom >= 610:
                     self.gravidade = -10
     
     def colisao_jogador(self,  inimigo):
