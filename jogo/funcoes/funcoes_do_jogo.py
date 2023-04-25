@@ -4,6 +4,7 @@ from classes import TelaInicial, TelaJogo
 
 def inicializa():
     pygame.init()
+    pygame.mixer.init()
     tela = pygame.display.set_mode((1280,720))
     fonte = pygame.font.get_default_font()
     pygame.display.set_caption('Knight Runner')

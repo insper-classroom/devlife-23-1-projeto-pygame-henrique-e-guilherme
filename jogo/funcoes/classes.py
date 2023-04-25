@@ -38,7 +38,7 @@ class TelaInicial():
 
     def update(self, assets):
         if not self.musica_tela_inicial_tocando:
-            pygame.mixer_music.load('jogo/assets/musica_inicial.ogg')
+            pygame.mixer_music.load('jogo/assets/musica_inicial.mp3')
             pygame.mixer_music.set_volume(0.3)
             pygame.mixer_music.play()
             self.musica_tela_inicial_tocando = True
@@ -220,7 +220,7 @@ class TelaJogo():
 
     def update(self, assets):
         if not self.musica_jogo_tocando:
-            pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
+            pygame.mixer_music.load('jogo/assets/musica_jogo.mp3')
             pygame.mixer_music.set_volume(0.2)
             pygame.mixer_music.play()
             self.musica_jogo_tocando = True
