@@ -23,6 +23,8 @@ class TelaInicial():
 
         self.tem_que_trocar = False
 
+        self.botao_som = pygame.mixer.Sound('jogo/assets/botao_som.mp3')
+
     def desenha(self):
         self.tela.fill((255, 255, 255))
 
@@ -39,7 +41,7 @@ class TelaInicial():
     def update(self, assets):
         if not self.musica_tela_inicial_tocando:
             pygame.mixer_music.load('jogo/assets/musica_inicial.mp3')
-            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.set_volume(0.2)
             pygame.mixer_music.play()
             self.musica_tela_inicial_tocando = True
 
@@ -49,6 +51,7 @@ class TelaInicial():
                 return False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    self.botao_som.play()
                     self.tem_que_trocar = True
         return True
     
@@ -90,6 +93,8 @@ class TelaInstrucoes():
 
         self.musica_tela_inicial_tocando = True
 
+        self.botao_som = pygame.mixer.Sound('jogo/assets/botao_som.mp3')
+
         self.tem_que_trocar = False
 
     def desenha(self):
@@ -121,6 +126,7 @@ class TelaInstrucoes():
                 return False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    self.botao_som.play()
                     self.tem_que_trocar = True
         return True
     
@@ -225,7 +231,7 @@ class TelaJogo():
     def update(self, assets):
         if not self.musica_jogo_tocando:
             pygame.mixer_music.load('jogo/assets/musica_jogo.mp3')
-            pygame.mixer_music.set_volume(0.2)
+            pygame.mixer_music.set_volume(0.3)
             pygame.mixer_music.play()
             self.musica_jogo_tocando = True
 
@@ -327,6 +333,7 @@ class Jogador(pygame.sprite.Sprite):
 
         self.dano_som = pygame.mixer.Sound('jogo/assets/dano_som.mp3')
         self.pontuou_som = pygame.mixer.Sound('jogo/assets/pontuou_som.mp3')
+        self.pulo_som = pygame.mixer.Sound('jogo/assets/pulo2_som.mp3')
 
         self.vidas = 3
 
@@ -373,6 +380,7 @@ class Jogador(pygame.sprite.Sprite):
                 #Faz o jogador pular
                 if self.rect.bottom >= 610:
                     self.gravidade = -10
+                    self.pulo_som.play()
     
     def colisao_jogador(self,  inimigo):
         #Fazer a colisao do jogador com os inimigos
@@ -476,6 +484,8 @@ class TelaGameOver():
 
         self.musica_tela_jogo_tocando = True
 
+        self.botao_som = pygame.mixer.Sound('jogo/assets/botao_som.mp3')
+
         self.tem_que_trocar = False
 
     def desenha(self):
@@ -494,7 +504,7 @@ class TelaGameOver():
     def update(self, assets):
         if not self.musica_tela_jogo_tocando:
             pygame.mixer_music.load('jogo/assets/musica_jogo.ogg')
-            pygame.mixer_music.set_volume(0.3)
+            pygame.mixer_music.set_volume(0.4)
             pygame.mixer_music.play()
             self.musica_tela_inicial_tocando = True
 
@@ -504,6 +514,7 @@ class TelaGameOver():
                 return False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    self.botao_som.play()
                     self.tem_que_trocar = True
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit()
