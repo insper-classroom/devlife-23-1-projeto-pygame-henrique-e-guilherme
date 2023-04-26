@@ -192,6 +192,14 @@ class TelaJogo():
         if abs(self.scroll_chao) > self.chao.get_width():
             self.scroll_chao = 0
 
+        #Vidas
+        self.tela.blit(self.texto_vidas, (7, 0))
+
+        #Score
+        self.tela.blit(self.texto_pontuacao, (1273 - self.texto_pontuacao.get_width(), 40))
+
+        #High score
+        self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 10))
 
         for inimigo in self.lista_de_inimigos:
             inimigo.update()
@@ -207,6 +215,7 @@ class TelaJogo():
 
         self.Clock.tick(60) #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
 
+        self.tela.blit(self.texto_municao, (7, 40))
 
         pygame.display.update()
 
