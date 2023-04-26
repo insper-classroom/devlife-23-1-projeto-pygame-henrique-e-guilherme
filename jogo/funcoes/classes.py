@@ -8,7 +8,6 @@ class TelaInicial():
         self.dicionario = assets
         self.tela = assets['tela']
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela inicial', True, (0, 255, 0))
 
         self.fonte2 = assets['fonte2']
         self.texto2 = self.fonte2.render('Pressione "ESPAÇO" para continuar', True, (255, 230, 0))
@@ -30,8 +29,6 @@ class TelaInicial():
 
         self.tela.blit(self.fundo, (0, 0))
         self.tela.blit(self.chao, (0, 620))
-
-        self.tela.blit(self.texto, (300, 0))
 
         self.tela.blit(self.logo, (234, 250))
 
@@ -66,7 +63,6 @@ class TelaInstrucoes():
         self.dicionario = assets
         self.tela = assets['tela']
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela instrucoes', True, (0, 255, 0))
         self.fonte2 = assets['fonte2']
         self.fonte2_grande = assets['fonte2_grande']
 
@@ -103,8 +99,6 @@ class TelaInstrucoes():
         self.tela.blit(self.fundo, (0, 0))
         self.tela.blit(self.chao, (0, 620))
 
-        self.tela.blit(self.texto, (300, 0))
-
         self.tela.blit(self.texto2, (self.texto2_pos_x, 100))
         self.tela.blit(self.texto3, (self.texto3_pos_x, 220))
         self.tela.blit(self.texto4, (self.texto4_pos_x, 290))
@@ -140,7 +134,6 @@ class TelaJogo():
     def __init__(self, assets):
 
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela Jogo', True, (0, 255, 0))
         self.dicionario = assets
         #Adicionei essas imagens so para testar e dps mudar
         self.fundo = assets['fundo']
@@ -198,17 +191,7 @@ class TelaJogo():
         self.scroll_chao -= 5
         if abs(self.scroll_chao) > self.chao.get_width():
             self.scroll_chao = 0
- 
-        self.tela.blit(self.texto, (250, 0))
 
-        #Vidas
-        self.tela.blit(self.texto_vidas, (7, 0))
-
-        #Score
-        self.tela.blit(self.texto_pontuacao, (1273 - self.texto_pontuacao.get_width(), 40))
-
-        #High score
-        self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 10))
 
         for inimigo in self.lista_de_inimigos:
             inimigo.update()
@@ -224,7 +207,6 @@ class TelaJogo():
 
         self.Clock.tick(60) #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
 
-        self.tela.blit(self.texto_municao, (7, 40))
 
         pygame.display.update()
 
@@ -462,7 +444,6 @@ class TelaGameOver():
         self.dicionario = assets
         self.tela = assets['tela']
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-        self.texto = self.fonte.render('Tela game over', True, (0, 255, 0))
         self.fonte2 = assets['fonte2']
         self.fonte2_grande = assets['fonte2_grande']
         self.fonte2_xgrande = assets['fonte2_xgrande']
@@ -490,8 +471,6 @@ class TelaGameOver():
 
     def desenha(self):
         self.tela.fill((0, 0, 0))
-
-        self.tela.blit(self.texto, (300, 0))
 
         self.tela.blit(self.texto2, (self.texto2_pos_x, 250))
         self.tela.blit(self.texto4, (self.texto4_pos_x, 350))

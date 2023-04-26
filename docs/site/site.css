@@ -3,12 +3,14 @@ html {
   }
 
 .header {
+    display: block;
     text-align: center;
     margin: 10px;
     background-color: black;
 }
 
 .logo{
+    display: block;
     text-align: center;
     background-color: black;
 }
