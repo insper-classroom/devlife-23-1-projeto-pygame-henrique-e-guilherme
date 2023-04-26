@@ -1,0 +1,143 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+  }
+
+.header {
+    min-height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(192, 80, 80, 0.7), rgba(29, 26, 27, 0.7)), url(images/site_background.png);
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+
+.logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.logo img{
+    margin-bottom: 20px;
+}
+
+.botoes-header{
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    align-items: center;
+}
+
+.botoes-header a{
+    text-decoration: none;
+    width: 150px;
+    display: inline-block;
+    margin: 0px 10px;
+    padding: 12px;
+    color: yellow;
+    border: 0.5px solid yellow;
+}
+
+.botoes-header a:hover{
+    background-color: yellow;
+    color: black;
+}
+
+.gameplay {
+    width: 100%;
+    background-color: rgb(192, 80, 80);
+    padding: 100px 0px 100px;
+}
+
+.gameplay h1 {
+    color:white;
+    text-align: center;
+    padding: 0px 0px 50px;
+    font-size: 60px;
+}
+
+.gameplay p {
+    color: white;
+    text-align: center;
+    font-size: 25px;
+    padding:0px 150px 70px;
+}
+
+.gameplay-imagens {
+    display: block;
+    margin: auto;
+    padding: 0px 150px;
+}
+
+.gameplay img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+.gameplay-imagem-texto {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 70px;
+    color: white;
+}
+
+.gameplay-video{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+.instalacao {
+    width: 100%;
+    background-color: rgb(143, 47, 47);
+    padding: 100px 0px 100px;
+}
+
+.instalacao h1{
+    color:white;
+    text-align: center;
+    padding: 0px 0px 50px;
+    font-size: 60px;
+}
+
+.instalacao p {
+    color: white;
+    text-align: center;
+    font-size: 25px;
+    padding:0px 150px;
+    margin-bottom: 30px;
+}
+
+.download {
+    text-align: center;
+    text-decoration: none;
+    width: 150px;
+    display: block;
+    margin: 0px 10px;
+    padding: 12px;
+    color: yellow;
+    border: 0.5px solid yellow;
+    margin: auto;
+    margin-bottom: 30px;
+}
+
+.instalacao a:hover{
+    background-color: yellow;
+    color: black;
+}
+
+.instalacao a {
+    color: yellow;
+}
