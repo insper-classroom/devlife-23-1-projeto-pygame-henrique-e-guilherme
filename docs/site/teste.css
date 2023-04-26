@@ -98,3 +98,46 @@ html {
     width: 100%;
     margin-bottom: 0px;
 }
+
+.instalacao {
+    width: 100%;
+    background-color: rgb(143, 47, 47);
+    padding: 100px 0px 100px;
+}
+
+.instalacao h1{
+    color:white;
+    text-align: center;
+    padding: 0px 0px 50px;
+    font-size: 60px;
+}
+
+.instalacao p {
+    color: white;
+    text-align: center;
+    font-size: 25px;
+    padding:0px 150px;
+    margin-bottom: 30px;
+}
+
+.download {
+    text-align: center;
+    text-decoration: none;
+    width: 150px;
+    display: block;
+    margin: 0px 10px;
+    padding: 12px;
+    color: yellow;
+    border: 0.5px solid yellow;
+    margin: auto;
+    margin-bottom: 30px;
+}
+
+.instalacao a:hover{
+    background-color: yellow;
+    color: black;
+}
+
+.instalacao a {
+    color: yellow;
+}
