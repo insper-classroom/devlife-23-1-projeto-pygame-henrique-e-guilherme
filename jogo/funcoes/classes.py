@@ -229,7 +229,6 @@ class TelaJogo():
         pygame.display.update()
 
     def update(self, assets):
-        print (self.lista_de_inimigos)
         if not self.musica_jogo_tocando:
             pygame.mixer_music.load('jogo/assets/musica_jogo.mp3')
             pygame.mixer_music.set_volume(0.3)
