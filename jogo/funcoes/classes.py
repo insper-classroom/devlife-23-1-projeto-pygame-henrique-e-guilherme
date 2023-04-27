@@ -164,6 +164,8 @@ class TelaJogo():
         self.jogador = Jogador()
         self.tiros = pygame.sprite.Group()
 
+        self.lista_explosoes = []
+
         self.musica_jogo_tocando = False
 
         #Texto das vidas
@@ -216,6 +218,10 @@ class TelaJogo():
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
 
+        for explosao in self.lista_explosoes:
+            explosao.update()
+            self.tela.blit(explosao.image, explosao.rect)
+
         self.tiros.update()
         self.tiros.draw(self.tela)
 
@@ -258,10 +264,15 @@ class TelaJogo():
             if inimigo.rect.centerx < -50:
                 self.lista_de_inimigos.remove(inimigo)
             if pygame.sprite.spritecollide(inimigo, self.tiros, True, pygame.sprite.collide_mask):
+                self.lista_explosoes.append(Explosao(inimigo.rect.centerx, inimigo.rect.centery))
                 self.lista_de_inimigos.remove(inimigo)
                 Jogador().pontuou_som.play()
                 self.pontuacao += 50
                 self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
+
+        for explosao in self.lista_explosoes:
+            if explosao.frame_atual == 7:
+                self.lista_explosoes.remove(explosao)
 
         #Spawna inimigos a cada 2 segundos
         if relogio % 2 == 0 and self.pode_spawnar and relogio != 0:
@@ -291,6 +302,7 @@ class TelaJogo():
                 self.lista_de_vidas.remove(vida)
                 if self.jogador.vidas < 3:
                     self.jogador.vidas += 1
+                    Coracao().som.play()
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
         #Jogador morre
@@ -523,6 +535,46 @@ class Tiro (pygame.sprite.Sprite):
         if self.rect.centerx > 1280:
             self.kill()
 
+class Explosao (pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        pygame.sprite.Sprite.__init__(self)
+        self.sprites = SpriteSheet('jogo/assets/explosao.png')
+        self.lista_sprites = []
+
+        self.frame_atual = 0
+        self.cooldown_animacao = 100
+
+        #Animacao
+        for contador in range(8):
+            self.lista_sprites.append(self.sprites.corta_imagem(contador, 48, 48, 2))
+        self.image = self.lista_sprites[0]
+
+
+        self.image = pygame.transform.scale_by(self.image, 1)
+        self.mask = pygame.mask.from_surface(self.image)
+
+        self.tempo = pygame.time.get_ticks()
+
+        self.rect = self.mask.get_rect()
+        
+        #Posicoes
+        self.rect.centery = pos_y
+        self.rect.centerx = pos_x
+
+    
+    def update(self):
+        tempo_atual = pygame.time.get_ticks()
+
+        if tempo_atual - self.tempo > self.cooldown_animacao:
+            self.tempo = tempo_atual
+            self.frame_atual += 1
+        if self.frame_atual >= len(self.lista_sprites):
+            self.frame_atual = 0
+        self.image = self.lista_sprites[self.frame_atual]
+
+        if self.rect.centerx <= -100:
+            self.kill()
+
 class TelaGameOver():
     def __init__(self, assets):
         self.dicionario = assets
@@ -628,6 +680,8 @@ class Coracao (pygame.sprite.Sprite):
         self.rect = self.mask.get_rect()
         self.rect.centery = posicao_y
         self.rect.centerx = 1280
+
+        self.som = pygame.mixer.Sound('jogo/assets/vida_som.mp3')
 
     def update(self):
         self.rect.centerx -= 2.5
