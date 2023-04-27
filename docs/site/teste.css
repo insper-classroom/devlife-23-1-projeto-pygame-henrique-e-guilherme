@@ -17,6 +17,10 @@ html {
     position: relative;
 }
 
+main{
+    margin-top: 10px;
+}
+
 .logo {
     position: absolute;
     top: 50%;
@@ -140,4 +144,43 @@ html {
 
 .instalacao a {
     color: yellow;
+}
+
+
+.logs{
+    background-color: rgb(125, 38, 38);
+    text-align: center;
+    color: white;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    
+}
+.logs h1{
+    color:white;
+    text-align: center;
+    padding: 0px 0px 30px;
+    font-size: 30px;
+}
+
+.logs em{
+    line-height: 75px;
+    font-size: 30px;
+    font-weight: 900;
+}
+
+.logs p{
+    font-size: 20px;
+}
+
+.github{
+    display: flex;
+    justify-content: center;
+    background-color: rgb(131, 56, 56);
+}
+
+.github img{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 50px;
+    height: 50px;
 }
