@@ -1,6 +1,34 @@
 import pygame
 import random
 
+class TextBox():
+    def __init__ (self, fonte, assets):
+        self.rect = pygame.Rect(400, 500, 500 , 40)
+        self.assets = assets
+        self.text = ''
+        self.text_surface = fonte.render(self.text, True, 'Red')
+        self.pode_escrever = False
+        self.fonte = fonte
+    
+    def escreve(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print (self.rect)
+            if  self.rect.collidepoint(event.pos):
+                self.pode_escrever = True
+            else:
+                self.pode_escrever = False
+        if event.type == pygame.KEYDOWN and self.pode_escrever:
+            if event.key == pygame.K_RETURN:
+                self.assets['usuario_atual'] = self.text
+            elif event.key == pygame.K_BACKSPACE:
+                self.text = self.text[:-1]
+            else:
+                self.text += event.unicode
+            self.text_surface = self.fonte.render(self.text, True, 'Yellow')
+            return self.text_surface
+    def draw(self, screen):
+        screen.blit(self.text_surface, (self.rect.x + 5, self.rect.y + 5))
+        pygame.draw.rect(screen, 'Yellow', self.rect, 5)
 
 
 class TelaInicial():
@@ -8,10 +36,11 @@ class TelaInicial():
         self.dicionario = assets
         self.tela = assets['tela']
         self.fonte = pygame.font.Font(assets['fonte'], 50)
-
         self.fonte2 = assets['fonte2']
-        self.texto2 = self.fonte2.render('Pressione "ESPAÇO" para continuar', True, (255, 230, 0))
+        self.texto2 = self.fonte2.render('Escreva seu nome e aperte ENTER para iniciar', True, (255, 230, 0))
+        self.caixa_de_texto = TextBox(self.fonte2, assets)
         self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+
         
         self.logo = pygame.transform.scale(pygame.image.load('jogo/assets/logo.png'), (812, 98))
 
@@ -33,6 +62,7 @@ class TelaInicial():
         self.tela.blit(self.logo, (234, 250))
 
         self.tela.blit(self.texto2, (self.texto2_pos_x, 368))
+        self.caixa_de_texto.draw(self.tela)
         pygame.display.update()
 
     def update(self, assets):
@@ -47,9 +77,10 @@ class TelaInicial():
                 pygame.quit()
                 return False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_RETURN:
                     self.botao_som.play()
                     self.tem_que_trocar = True
+            self.caixa_de_texto.escreve(event)
         return True
     
     def troca_tela(self):
@@ -132,7 +163,6 @@ class TelaInstrucoes():
 
 class TelaJogo():
     def __init__(self, assets):
-
         self.fonte = pygame.font.Font(assets['fonte'], 50)
         self.dicionario = assets
         #Adicionei essas imagens so para testar e dps mudar
@@ -297,6 +327,9 @@ class TelaJogo():
         if self.jogador.vidas <=0:
             self.tem_que_trocar = True
             assets['pontuacao'] = self.pontuacao
+            f = open("usuarios.txt", "a")
+            f.write(f'{assets["usuario_atual"]}: '+f'{assets["highscore"]}''\n')
+            f.close()
  
         #Pontuação
         self.timer_pontuacao_fim = pygame.time.get_ticks() // 1000
@@ -331,7 +364,6 @@ class TelaJogo():
         else:
             return self
         
-
 class Jogador(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
