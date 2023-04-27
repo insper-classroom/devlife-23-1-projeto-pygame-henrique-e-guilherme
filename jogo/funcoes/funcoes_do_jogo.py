@@ -23,6 +23,7 @@ def inicializa():
         'fundo': pygame.transform.scale((pygame.image.load('jogo/assets/Red Sky.png').convert_alpha()), (1280, 720)),
         'ground': pygame.transform.scale((pygame.image.load('jogo/assets/ground1.png').convert_alpha()), (1280, 300)),
 
+        'usuario_atual': '',
         'highscore': 0,
         'pontuacao': 0,
     }
