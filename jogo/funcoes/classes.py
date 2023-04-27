@@ -158,7 +158,8 @@ class TelaJogo():
 
         self.lista_de_inimigos = []
         self.tempo = 0
-        self.pode = True
+        self.pode_spawnar = True
+        self.pode_spawnar_morcego = True
 
         self.jogador = Jogador()
         self.tiros = pygame.sprite.Group()
@@ -228,6 +229,7 @@ class TelaJogo():
         pygame.display.update()
 
     def update(self, assets):
+        print (self.lista_de_inimigos)
         if not self.musica_jogo_tocando:
             pygame.mixer_music.load('jogo/assets/musica_jogo.mp3')
             pygame.mixer_music.set_volume(0.3)
@@ -254,7 +256,7 @@ class TelaJogo():
             if self.jogador.colisao_jogador(inimigo):
                 self.lista_de_inimigos.remove(inimigo)
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
-            if inimigo.rect.centerx <= -100:
+            if inimigo.rect.centerx < -50:
                 self.lista_de_inimigos.remove(inimigo)
             if pygame.sprite.spritecollide(inimigo, self.tiros, True, pygame.sprite.collide_mask):
                 self.lista_de_inimigos.remove(inimigo)
@@ -263,20 +265,28 @@ class TelaJogo():
                 self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
 
         #Spawna inimigos a cada 2 segundos
-        if relogio % 2 == 0 and self.pode and relogio != 0:
+        if relogio % 2 == 0 and self.pode_spawnar and relogio != 0:
             self.spawn_inimigo()
-            self.pode = False
+            self.pode_spawnar = False
             self.tempo = relogio
-            
-        #Faz spawnar a cada 1 segundo
-        if self.tempo != relogio:
-            self.pode = True
 
+        #Faz spawnar a cada 1 segundo, evita que o inimigo nasça em cima do outro
+        if self.tempo != relogio:
+            self.pode_spawnar = True
+            self.pode_spawnar_morcego = True
+
+        if relogio % 5 == 0 and self.pode_spawnar_morcego and relogio != 0:
+            self.lista_de_inimigos.append(Morcego())
+            self.pode_spawnar_morcego = False
+            self.tempo = relogio
+
+        #Spawn Coracoes
         self.timer_vidas_fim = pygame.time.get_ticks() // 1000
         if self.timer_vidas_fim - self.timer_vidas_comeco >= 15:
             self.lista_de_vidas.append(Coracao())
             self.timer_vidas_comeco = self.timer_vidas_fim
 
+        #Colisão com coração
         for vida in self.lista_de_vidas:
             if pygame.sprite.collide_mask(self.jogador, vida):
                 self.lista_de_vidas.remove(vida)
@@ -284,10 +294,12 @@ class TelaJogo():
                     self.jogador.vidas += 1
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
 
+        #Jogador morre
         if self.jogador.vidas <=0:
             self.tem_que_trocar = True
             assets['pontuacao'] = self.pontuacao
  
+        #Pontuação
         self.timer_pontuacao_fim = pygame.time.get_ticks() // 1000
         if self.timer_pontuacao_fim - self.timer_pontuacao_comeco >= 3:
             self.pontuacao += 5
@@ -297,6 +309,7 @@ class TelaJogo():
             assets['highscore'] = self.pontuacao
             self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 230, 0))
 
+        #Municao
         self.timer_recarga_municao_fim = pygame.time.get_ticks() // 1000
         if self.timer_recarga_municao_fim - self.timer_recarga_municao_comeco >= 7 and self.jogador.municoes < 3:
             self.jogador.municoes += 1
@@ -306,6 +319,7 @@ class TelaJogo():
         return True
     
     def spawn_inimigo(self):
+        #Fantasma ou demonio
         if random.randint(0, 1):
             condicao = True
         else: condicao = False
@@ -451,6 +465,47 @@ class Inimigo (pygame.sprite.Sprite):
             self.frame_atual = 0
         self.image = self.lista_sprites[self.frame_atual]
 
+class Morcego (pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.sprites = SpriteSheet('jogo/assets/morcego_spritesheet.png')
+        self.lista_sprites = []
+
+        self.frame_atual = 0
+        self.cooldown_animacao = 100
+
+        #Animacao
+        for contador in range(2):
+            self.lista_sprites.append(self.sprites.corta_imagem(contador, 52, 80, 1))
+        self.image = self.lista_sprites[0]
+
+
+        self.image = pygame.transform.scale_by(self.image, 1)
+        self.mask = pygame.mask.from_surface(self.image)
+
+        self.tempo = pygame.time.get_ticks()
+
+        self.rect = self.mask.get_rect()
+        
+        #Posicoes
+        self.rect.centery = 500
+        self.rect.centerx = 1280
+
+    
+    def update(self):
+        self.rect.centerx -= 7
+        tempo_atual = pygame.time.get_ticks()
+
+        if tempo_atual - self.tempo > self.cooldown_animacao:
+            self.tempo = tempo_atual
+            self.frame_atual += 1
+        if self.frame_atual >= len(self.lista_sprites):
+            self.frame_atual = 0
+        self.image = self.lista_sprites[self.frame_atual]
+
+        if self.rect.centerx <= -100:
+            self.kill()
+
 class Tiro (pygame.sprite.Sprite):
     def __init__(self, jogador_center_y):
         pygame.sprite.Sprite.__init__(self)
@@ -536,8 +591,6 @@ class TelaGameOver():
         else:
             return self
         
-
-
 #Fonte: https://www.youtube.com/watch?v=nXOVcOBqFwM&ab_channel=CodingWithRuss
 class SpriteSheet:
     def __init__(self, imagem):
