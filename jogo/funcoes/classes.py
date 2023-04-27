@@ -176,6 +176,8 @@ class TelaJogo():
         self.timer_recarga_municao_comeco = 0
         self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
 
+        self.lista_de_vidas = []
+        self.timer_vidas_comeco = 0
 
     def desenha(self):
         #Fundo infinito
@@ -206,6 +208,10 @@ class TelaJogo():
             self.tela.blit(inimigo.image, inimigo.rect)
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
+
+        for vida in self.lista_de_vidas:
+            vida.update()
+            self.tela.blit(vida.image, vida.rect)
 
         self.tiros.update()
         self.tiros.draw(self.tela)
@@ -264,6 +270,18 @@ class TelaJogo():
         if self.tempo != relogio:
             self.pode = True
 
+        self.timer_vidas_fim = pygame.time.get_ticks() // 1000
+        if self.timer_vidas_fim - self.timer_vidas_comeco >= 15:
+            self.lista_de_vidas.append(Coracao())
+            self.timer_vidas_comeco = self.timer_vidas_fim
+
+        for vida in self.lista_de_vidas:
+            if pygame.sprite.collide_mask(self.jogador, vida):
+                self.lista_de_vidas.remove(vida)
+                if self.jogador.vidas < 3:
+                    self.jogador.vidas += 1
+                self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
+
         if self.jogador.vidas <=0:
             self.tem_que_trocar = True
             assets['pontuacao'] = self.pontuacao
@@ -291,6 +309,7 @@ class TelaJogo():
         else: condicao = False
         self.lista_de_inimigos.append(Inimigo(condicao))
     
+
     def troca_tela(self):
         if self.tem_que_trocar:
             return TelaGameOver(self.dicionario)
@@ -528,3 +547,44 @@ class SpriteSheet:
         imagem = pygame.transform.scale(imagem, (largura*escala, altura*escala)) #Aumenta a imagem
         imagem.set_colorkey('White') #Define a cor do fundo da imagem para ser transparente
         return imagem
+    
+class Coracao (pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.lista_sprites = []
+
+        self.frame_atual = 0
+        self.cooldown_animacao = 100
+        #Tipo de Inimigo
+        posicao_y = 595
+        
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore1.png').convert_alpha(), (40, 40)))
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore2.png').convert_alpha(), (40, 40)))
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore3.png').convert_alpha(), (40, 40)))
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore4.png').convert_alpha(), (40, 40)))
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore5.png').convert_alpha(), (40, 40)))
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore6.png').convert_alpha(), (40, 40)))
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore7.png').convert_alpha(), (40, 40)))
+        self.lista_sprites.append(pygame.transform.scale(pygame.image.load('jogo/assets/coracao/Cuore8.png').convert_alpha(), (40, 40)))
+        self.image = self.lista_sprites[self.frame_atual]
+
+        self.mask = pygame.mask.from_surface(self.image)
+        self.tempo = pygame.time.get_ticks()
+
+        self.rect = self.mask.get_rect()
+        self.rect.centery = posicao_y
+        self.rect.centerx = 1280
+
+    def update(self):
+        self.rect.centerx -= 2.5
+
+        if self.rect.centerx <= -100:
+            self.kill()
+        tempo_atual = pygame.time.get_ticks()
+        # if self.demonio:
+        if tempo_atual - self.tempo > self.cooldown_animacao:
+            self.tempo = tempo_atual
+            self.frame_atual += 1
+        if self.frame_atual >= len(self.lista_sprites):
+            self.frame_atual = 0
+        self.image = self.lista_sprites[self.frame_atual]

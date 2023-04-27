@@ -158,18 +158,22 @@ main{
 .logs h1{
     color:white;
     text-align: center;
-    padding: 0px 0px 30px;
-    font-size: 30px;
+    font-size: 60px;
 }
 
-.logs em{
+.dias em{
     line-height: 75px;
-    font-size: 30px;
+    font-size: 35px;
     font-weight: 900;
 }
 
-.logs p{
-    font-size: 20px;
+.dias h2{
+    margin-top: 50px;
+}
+
+.dias p{
+    font-size: 25px;
+    margin-bottom: 20px;
 }
 
 .github{
