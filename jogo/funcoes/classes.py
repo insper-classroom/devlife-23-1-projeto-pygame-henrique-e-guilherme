@@ -167,6 +167,7 @@ class TelaJogo():
 
         #Texto das vidas
         self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
+        self.texto_vidas_max = pygame.transform.scale_by(self.fonte2.render(chr(9829) * 3, True, (0, 0, 0)), 1.5)
 
         self.pontuacao = 0
         self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
@@ -195,6 +196,7 @@ class TelaJogo():
             self.scroll_chao = 0
 
         #Vidas
+        self.tela.blit(self.texto_vidas_max, (7, 0))
         self.tela.blit(self.texto_vidas, (7, 0))
 
         #Score

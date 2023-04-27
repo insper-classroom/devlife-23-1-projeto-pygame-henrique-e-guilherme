@@ -31,7 +31,13 @@ main{
 }
 
 .logo img{
-    margin-bottom: 20px;
+    margin-bottom: 0px;
+}
+
+.logo p {
+    font-size: 20px;
+    margin-bottom: 50px;
+
 }
 
 .botoes-header{
@@ -179,7 +185,7 @@ main{
 .github{
     display: flex;
     justify-content: center;
-    background-color: rgb(131, 56, 56);
+    background-color: rgb(81, 12, 12);
 }
 
 .github img{
@@ -187,4 +193,48 @@ main{
     margin-bottom: 10px;
     width: 50px;
     height: 50px;
+}
+
+.avaliacao {
+    width: 100%;
+    background-color: rgb(143, 47, 47);
+    padding: 100px 0px 100px;
+}
+
+.avaliacao h1{
+    color:white;
+    text-align: center;
+    padding: 0px 0px 50px;
+    font-size: 60px;
+}
+
+.avaliacao p {
+    color: white;
+    text-align: center;
+    font-size: 25px;
+    padding:0px 150px;
+    line-height: 50px;
+    margin-bottom: 50px;
+}
+
+.avaliacao-btn {
+    text-align: center;
+    text-decoration: none;
+    width: 200px;
+    display: block;
+    margin-top: 50px;
+    margin: 0px 10px;
+    padding: 12px;
+    color: yellow;
+    border: 0.5px solid yellow;
+    margin: auto;
+}
+
+.avaliacao a:hover{
+    background-color: yellow;
+    color: black;
+}
+
+.avaliacao a {
+    color: yellow;
 }
