@@ -3,17 +3,23 @@
 # Knight Runner
 
 Feito por: Guilherme Kaidei e Henrique Mayor
+Este é um projeto de um jogo 2D desenvolvido por Guilherme Kaidei e Henrique Mayor como projeto na disciplina Developer Life do semestre do curso de Ciência da Computação do Insper. O jogo foi desenvolvido em Python, utilizando o a biblioteca pygame.
 
 - Modo de instalar:
+1. Para jogar, é necessário ter o Python 3 instalado na máquina
+2. Você deve instalar a biblioteca [pygame](https://www.pygame.org/news) com o comando: pip install pygame
+3. Após instalar a biblioteca, utilize o botão abaixo para baixar o arquivo .zip e o extraia
+4. Após isso, execute o arquivo "jogo.py", dentro da pasta "funcoes", e o jogo será aberto em uma nova janela
 
+**Pular**: ESPAÇO
+
+**Atirar**: BOTÃO 1 MOUSE
 _________________
 
-- Instruções:
-
+- Descrição do jogo:
+Knight Runner é um jogo em 2D em que um cavaleiro corre enquanto desvia de obstáculos
+e enfrenta inimigos. O objetivo do jogo é sobreviver o máximo de tempo e matar o maior número 
+de inimigos possíveis para obter pontos. Enquanto pula e atira para vencer desafios, o jogador
+deve levar em consideração as 3 vidas que possui. Se o cavaleiro perder todas as vidas, o jogo acaba.
 __________________
-Vocês já tiveram 2 exemplos de arquivo README nos projetos anteriores (projeto individual e checks pygame). Desta vez não forneceremos um template, mas você pode usar os projetos anteriores como base.
-
-Lembre-se de colocar algumas imagens do jogo no seu README.
-
-**IMPORTANTE:** coloque o nome de todos os membros do grupo neste documento e na página do jogo.
 
