@@ -12,6 +12,7 @@ Este é um projeto de um jogo 2D desenvolvido por Guilherme Kaidei e Henrique Ma
 4. Após isso, execute o arquivo "jogo.py", dentro da pasta "funcoes", e o jogo será aberto em uma nova janela
 
 **Pular**: ESPAÇO
+
 **Atirar**: BOTÃO 1 MOUSE
 _________________
 
