@@ -2,112 +2,95 @@
 <html>
     <head>
         <title>Knight Runner</title>
-        <link rel="stylesheet" href="site/site.css">
+        <link rel="stylesheet" href="styles.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Acme&family=Montserrat:wght@500&display=swap" rel="stylesheet">
     </head>
     <body>
-        <header>
+        <section class='header'>
             <div class="logo">
-                <img class="logo-imagem" src="site/images/logo.png" alt="logo">
+                <img src="images/logo.png" alt="Logo">
+                <p>Um jogo feito por Guilherme Kaidei e Henrique Mayor</p>
+                <ul class="botoes-header">
+                    <li><a href="#gameplay">Gameplay</a></li>
+                    <li><a href="#instalacao">Instalação</a></li>
+                    <li><a href="#logs">Logs</a></li>
+                    <li><a href="#avaliacao">Avaliação</a></li>
+                </ul>
             </div>
-            <ul class="botoes-header">
-                <li><a href="#instalacao">Instalação</a></li>
-                <li><a href="#gameplay">Gameplay</a></li>
-                <li><a href="#logs">Logs</a></li>
-            </ul>
-            <div class="subtitulo">
-                <em>Knight Runner</em> é um jogo desenvolvido pelos alunos Guilherme Kaidei e Henrique Mayor como um projeto do curso de Ciência da Computação do Insper
+        </section>
+        <section class="gameplay" id="gameplay">
+            <h1>Gameplay</h1>
+            <p>Knight Runner é um jogo em 2D em que um cavaleiro corre enquanto desvia de obstáculos
+                e enfrenta inimigos. O objetivo do jogo é sobreviver o máximo de tempo e matar o maior número 
+                de inimigos possíveis para obter pontos. Enquanto pula e atira para vencer desafios, o jogador
+                deve levar em consideração as 3 vidas que possui. Se o cavaleiro perder todas as vidas, o jogo acaba.
+            </p>
+            <div class="gameplay-imagens">
+                <img src="images/foto_pulo.png">
+                <div class="gameplay-imagem-texto"> Pule para desviar</div>
+                <img src="images/foto_tiro.png">
+                <div class="gameplay-imagem-texto"> Atire para derrotar inimigos</div>
             </div>
-        </header>
-        <main>
-            <div class="descricao">
-                <div class="descricao-titulo">
-                    <strong>Descrição do jogo:</strong>
-                </div>
-                <div class="descricao-conteudo">
-                    <em>Knight Runner</em> é um jogo em 2D em que um cavaleiro corre enquanto desvia de obstáculos
-                        e enfrenta inimigos. O objetivo do jogo é sobreviver o máximo de tempo e matar o maior número 
-                        de inimigos possíveis para obter pontos. Enquanto pula e atira para vencer desafios, o jogador
-                        deve levar em consideração as 3 vidas que possui. Se o cavaleiro perder todas as vidas, o jogo acaba.
-                </div>
-                <div class="descricao-imagens">
-                    <div class="descricao-imagem1">
-                        <img class = 'descricao-imagem' src="site/images/foto_pulo.png" alt="foto_teste">
-                        <p class="descricao-imagem-texto">
-                            Pule para desviar de obstáculos
-                        </p>
-                    </div>
-                    <div class="descricao-imagem2">
-                        <img class = 'descricao-imagem' src="site/images/foto_tiro.png" alt="foto_teste">
-                        <p class="descricao-imagem-texto">
-                            Atire para matar inimigos
-                        </p>
-                    </div>
-                </div>
-                <div class="descricao-video">
-                    <section id="gameplay">
-                        <iframe height="350" width="600" src="https://www.youtube.com/embed/RosqH6KLZEM">
-                    </section>
-                    </iframe>
-                </div>
+            <div class="gameplay-video">
+                <iframe height="720" width="1280" src="https://www.youtube.com/embed/RosqH6KLZEM" frameBorder="0">
+                </iframe>
             </div>
-            <section id="instalacao">
-                <div class="como-jogar">
-                    <div class="como-jogar-titulo">
-                        <strong>Como jogar:</strong>
-                    </div>
-                    <section id="instalacao">
-                    <div class="como-jogar-conteudo">
-                        <p>
-                            Para jogar, é necessário ter o Python 3 instalado na máquina. 
-                            Além disso, você deve instalar a <a href = "https://www.pygame.org/news" target ="_blank" class = 'biblioteca'>biblioteca pygame<a> com o comando:
-                            pip install pygame. Após instalar a biblioteca, utilize o botão abaixo 
-                            para baixar o jogo e extraia o arquivo. Após isso, execute o arquivo jogo.py e
-                            o jogo será aberto em uma nova janela.
-                        </p>
-                    </div>
-                    <div class="como-jogar-botao">
-                        <a href="teste.zip" download> 
-                            <button class="botao-download">Download</button> 
-                        </a> 
-            </section>
-                </div>
+        </section>
+        <section class="instalacao" id="instalacao">
+            <h1>Instalação</h1>
+            <p>1. Para jogar, é necessário ter o Python 3 instalado na máquina</p>
+            <p>2. Você deve instalar a biblioteca <a href="https://www.pygame.org/news">pygame</a> com o comando: pip install pygame</p>
+            <p>3. Após instalar a biblioteca, utilize o botão abaixo para baixar o arquivo .zip e o extraia</p>
+            <a href="Knight Runner.zip" class="download">DOWNLOAD</a>
+            <p>4. Após isso, execute o arquivo "jogo.py" e o jogo será aberto em uma nova janela</p>
+        </section>
+        <section class = "logs" id = "logs">
+            <h1>Logs de Desenvolvimento</h1>
+            <div class = 'dias'>
+                <h2><em>Dia 1(18/04)</em></h2>
+                <p> Proposta inicial do projeto</p>
+                <p> Arquivos HTML e CSS do site criados</p>
+                <h2></h2><em>Dia 2 (19/04)</em>
+                <p> Adicionado ao jogo duas telas</p>
+                <p> Pequenas mudanças de design no site</p>
+                <h2><em>Dia 3 (20/04)</em></h2>
+                <p> Jogador, inimigo, pulo e colisão adicionados ao jogo</p>
+                <p> Vídeo provisório adicionado ao site</p>
+                <h2></h2><em>Dia 5 (22/04)</em>
+                <p> Vidas adicionadas ao jogo</p>
+                <p> Colisão com monstros adicionada ao jogo</p>
+                <h2><em>Dia 7 (24/04)</em></h2>
+                <p> Tiros adicionados</p>
+                <p> Inimigo morre ao ser atingido</p>
+                <p> Inimigos surgem infinitamente</p>
+                <p> Efeitos sonoros(provisorios) adicionados</p>
+                <h2><em>Dia 8 (25/04)</em></h2>
+                <p> Imagem do jogador mudada</p>
+                <p> Telas de instrução e Game Over adicionadas</p>
+                <p> Animações do jogador e monstros adicionadas</p>
+                <p> Sistema de pontuação adicionado</p>
+                <p> Âncoras e logo adicionados ao site</p>
+                <h2><em>Dia 9 (26/04)</em></h2>
+                <p> Segunda versão do site iniciada</p>
+                <p> Efeitos sonoros de pulo e trocar de tela adicionados</p>
+                <h2><em>Dia 10 (27/04)</em></h2>
+                <p> Log e footer adicionados no site</p>
+                <p> Item de recuperar vida adicionado ao jogo</p>
+                <p> Inimigo novo adicionado</p>
             </div>
-            <section id="logs"></section>
-                <h3>Log de desenvolvimento:</h3>
-                <p><em>Dia 1(18/04):</em></p>
-                <p>- Proposta inicial do projeto</p>
-                <p>- Arquivos HTML e CSS do site criados</p>
-                <p><em>Dia 2 (19/04):</em></p>
-                <p>- Adicionado ao jogo duas telas</p>
-                <p>- Pequenas mudanças de design no site</p>
-                <p><em>Dia 3 (20/04):</em></p>
-                <p>- Jogador, inimigo, pulo e colisao adicionados ao jogo</p>
-                <p>- Video provisorio adicionado ao site</p>
-                <p>- Fundo e chao agora se mexem infinitamente</p>
-                <p><em>Dia 4 (21/04):</em></p>
-                <p><em>Dia 5 (22/04):</em></p>
-                <p>- Vidas adicionadas ao jogo</p>
-                <p>- Colisao com monstros adicionada ao jogo</p>
-                <p><em>Dia 6 (23/04):</em></p>
-                <p><em>Dia 7 (24/04):</em></p>
-                <p>- Tiros adicionados</p>
-                <p>- Inimigo morre ao ser atingido</p>
-                <p>- Inimigos surgem infinitamente</p>
-                <p>- Efeitos sonoros(provisorios) adicionados</p>
-                <p><em>Dia 8 (25/04):</em></p>
-                <p>- Imagem do jogador mudada</p>
-                <p>- Telas de instrução e game over adicionadas</p>
-                <p>- Animações do jogador e monstros adicionadas</p>
-                <p>- Sistema de pontuação adicionado</p>
-                <p>- Âncoras e logo adicionados ao site</p>
-                
-
-                <h3>Relato da avaliação heurística</h3>
-                <p>.........</p>
-            </section>
-        </main>
+        </section>
+        <section class="avaliacao" id="avaliacao">
+            <h1>Avaliações heurísticas</h1>
+            <p>Para encontrar as avaliações de usabilidade do site feitas por usuários em 
+                diferentes estágios de desenvolvimento, clique no botão abaixo</p>
+            <a href="https://docs.google.com/document/d/1_PogUYZMpDOS_U2x3xXayWifUXAIFIVZEWG3UVf7kpM/edit?usp=sharing" class="avaliacao-btn">IR PARA AVALIAÇÕES</a>
+        </section>
+        <footer>
+            <div class = 'github'>
+                <a href="https://github.com/insper-classroom/devlife-23-1-projeto-pygame-henrique-e-guilherme/tree/main"><img src = images/github_logo.png></a>
+            </div>
+        </footer>
     </body>
 </html>

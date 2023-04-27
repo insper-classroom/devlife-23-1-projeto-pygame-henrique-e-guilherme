@@ -206,15 +206,15 @@ class TelaJogo():
         #High score
         self.tela.blit(self.texto_highscore, (1273 - self.texto_highscore.get_width(), 10))
 
+        for vida in self.lista_de_vidas:
+            vida.update()
+            self.tela.blit(vida.image, vida.rect)
+
         for inimigo in self.lista_de_inimigos:
             inimigo.update()
             self.tela.blit(inimigo.image, inimigo.rect)
         self.jogador.update()
         self.tela.blit(self.jogador.image, self.jogador.rect)
-
-        for vida in self.lista_de_vidas:
-            vida.update()
-            self.tela.blit(vida.image, vida.rect)
 
         self.tiros.update()
         self.tiros.draw(self.tela)
