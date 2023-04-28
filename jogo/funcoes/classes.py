@@ -415,7 +415,7 @@ class Tabela():
 
         self.texto2 = self.fonte2_grande.render('RANKING:' , True, ((255, 230, 0)))
         self.texto2_pox_x = 640 - self.texto2.get_rect()[2] / 2
-
+        
 
 
         self.lista_de_usuarios = []
@@ -773,6 +773,7 @@ class TelaGameOver():
                     self.tem_que_trocar = True
                     self.proxima_tela = TelaInicial(self.dicionario)
                 elif event.key == pygame.K_TAB:
+                    self.botao_som.play()
                     self.tem_que_trocar = True
                     self.proxima_tela = Tabela(self.dicionario)
                 elif event.key == pygame.K_ESCAPE:
