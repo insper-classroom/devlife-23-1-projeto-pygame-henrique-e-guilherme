@@ -7,8 +7,8 @@ Este é um projeto de um jogo 2D desenvolvido por Guilherme Kaidei e Henrique Ma
 
 - Modo de instalar:
 1. Para jogar, é necessário ter o Python 3 instalado na máquina
-2. Você deve instalar a biblioteca [pygame](https://www.pygame.org/news) com o comando: pip install pygame
-3. Após instalar a biblioteca, utilize o botão abaixo para baixar o arquivo .zip e o extraia
+2. Você deve instalar a biblioteca [pygame](https://www.pygame.org/news) e a [pandas](https://pandas.pydata.org/) com o comando: pip install pygame e pip install pandas
+3. Após instalar as bibliotecas, utilize o botão abaixo para baixar o arquivo .zip e o extraia
 4. Após isso, execute o arquivo "jogo.py", dentro da pasta "funcoes", e o jogo será aberto em uma nova janela
 
 **Pular**: ESPAÇO
