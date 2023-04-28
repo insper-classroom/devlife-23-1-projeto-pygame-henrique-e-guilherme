@@ -9,13 +9,16 @@ class CaixaTexto():
         self.texto_surface = fonte.render(self.texto, True, 'Red')
         self.pode_escrever = False
         self.fonte = fonte
+        self.cor = 'Yellow'
     
     def escreve(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if  self.rect.collidepoint(event.pos):
                 self.pode_escrever = True
+                self.cor = (152, 152, 49)
             else:
                 self.pode_escrever = False
+                self.cor = 'Yellow'
         if event.type == pygame.KEYDOWN and self.pode_escrever:
             if event.key == pygame.K_RETURN:
                 self.assets['usuario_atual'] = self.texto
@@ -31,7 +34,7 @@ class CaixaTexto():
         
     def desenha(self, screen):
         screen.blit(self.texto_surface, (self.rect.x + 5, self.rect.y + 5))
-        pygame.draw.rect(screen, 'Yellow', self.rect, 5)
+        pygame.draw.rect(screen, self.cor, self.rect, 5)
 
 
 class TelaInicial():
