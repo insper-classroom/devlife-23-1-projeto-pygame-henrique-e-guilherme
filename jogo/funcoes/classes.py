@@ -22,7 +22,7 @@ class TextBox():
             elif event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
             else:
-                self.text += event.unicode
+                self.text += event.unicode #https://www.pygame.org/docs/ref/event.html
             self.text_surface = self.fonte.render(self.text, True, 'Yellow')
             return self.text_surface
     def draw(self, screen):
