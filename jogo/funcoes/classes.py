@@ -6,7 +6,7 @@ class CaixaTexto():
         self.rect = pygame.Rect(590, 500, 100 , 40)
         self.assets = assets
         self.texto = ''
-        self.texto_surface = fonte.render(self.texto, True, 'Red')
+        self.texto_surface = fonte.render(self.texto, True, 'Black')
         self.pode_escrever = False
         self.fonte = fonte
         self.cor = 'Yellow'
@@ -30,11 +30,13 @@ class CaixaTexto():
                 self.texto += event.unicode #https://www.pygame.org/docs/ref/event.html
                 self.rect.width += 20
                 self.rect.x -= 10
-            self.texto_surface = self.fonte.render(self.texto, True, 'Yellow')
+            self.texto_surface = self.fonte.render(self.texto, True, 'Black')
         
     def desenha(self, screen):
-        screen.blit(self.texto_surface, (self.rect.x + 5, self.rect.y + 5))
         pygame.draw.rect(screen, self.cor, self.rect, 5)
+        screen.blit(self.texto_surface, (self.rect.x + 5, self.rect.y + 5))
+
+        
 
 
 class TelaInicial():
