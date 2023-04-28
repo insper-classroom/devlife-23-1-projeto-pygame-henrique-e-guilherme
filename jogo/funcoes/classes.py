@@ -21,11 +21,11 @@ class CaixaTexto():
                 self.assets['usuario_atual'] = self.texto
             elif event.key == pygame.K_BACKSPACE:
                 self.texto = self.texto[:-1]
-                self.rect.width -= 18
+                self.rect.width -= 20
                 self.rect.x += 10
             else:
                 self.texto += event.unicode #https://www.pygame.org/docs/ref/event.html
-                self.rect.width += 18
+                self.rect.width += 20
                 self.rect.x -= 10
             self.texto_surface = self.fonte.render(self.texto, True, 'Yellow')
         
