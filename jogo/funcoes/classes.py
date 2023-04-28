@@ -1,12 +1,12 @@
 import pygame
 import random
 
-class TextBox():
+class CaixaTexto():
     def __init__ (self, fonte, assets):
-        self.rect = pygame.Rect(400, 500, 500 , 40)
+        self.rect = pygame.Rect(590, 500, 100 , 40)
         self.assets = assets
-        self.text = ''
-        self.text_surface = fonte.render(self.text, True, 'Red')
+        self.texto = ''
+        self.texto_surface = fonte.render(self.texto, True, 'Red')
         self.pode_escrever = False
         self.fonte = fonte
     
@@ -18,15 +18,19 @@ class TextBox():
                 self.pode_escrever = False
         if event.type == pygame.KEYDOWN and self.pode_escrever:
             if event.key == pygame.K_RETURN:
-                self.assets['usuario_atual'] = self.text
+                self.assets['usuario_atual'] = self.texto
             elif event.key == pygame.K_BACKSPACE:
-                self.text = self.text[:-1]
+                self.texto = self.texto[:-1]
+                self.rect.width -= 18
+                self.rect.x += 10
             else:
-                self.text += event.unicode #https://www.pygame.org/docs/ref/event.html
-            self.text_surface = self.fonte.render(self.text, True, 'Yellow')
-            return self.text_surface
-    def draw(self, screen):
-        screen.blit(self.text_surface, (self.rect.x + 5, self.rect.y + 5))
+                self.texto += event.unicode #https://www.pygame.org/docs/ref/event.html
+                self.rect.width += 18
+                self.rect.x -= 10
+            self.texto_surface = self.fonte.render(self.texto, True, 'Yellow')
+        
+    def desenha(self, screen):
+        screen.blit(self.texto_surface, (self.rect.x + 5, self.rect.y + 5))
         pygame.draw.rect(screen, 'Yellow', self.rect, 5)
 
 
@@ -37,7 +41,7 @@ class TelaInicial():
         self.fonte = pygame.font.Font(assets['fonte'], 50)
         self.fonte2 = assets['fonte2']
         self.texto2 = self.fonte2.render('Escreva seu nome e aperte ENTER para iniciar', True, (255, 230, 0))
-        self.caixa_de_texto = TextBox(self.fonte2, assets)
+        self.caixa_de_texto = CaixaTexto(self.fonte2, assets)
         self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
 
         
@@ -61,7 +65,7 @@ class TelaInicial():
         self.tela.blit(self.logo, (234, 250))
 
         self.tela.blit(self.texto2, (self.texto2_pos_x, 368))
-        self.caixa_de_texto.draw(self.tela)
+        self.caixa_de_texto.desenha(self.tela)
         pygame.display.update()
 
     def update(self, assets):
