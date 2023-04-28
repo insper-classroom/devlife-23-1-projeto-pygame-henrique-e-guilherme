@@ -412,12 +412,6 @@ class Tabela():
         #Ordem decrescente
         df = df.sort_values(by=['score'], ascending=False)
 
-        #Acha se o player ja esta e subscreve o score com a maior pontuação
-        for i in range(len(df)):
-            if df.iloc[i]['player'] == assets['usuario_atual']:
-                if df.iloc[i]['score'] < assets['highscore']:
-                    df.iloc[i]['score'] = assets['highscore']
-                    break
         df.to_csv('usuarios.csv', index=False)
 
         
