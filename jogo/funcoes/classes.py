@@ -12,7 +12,6 @@ class TextBox():
     
     def escreve(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print (self.rect)
             if  self.rect.collidepoint(event.pos):
                 self.pode_escrever = True
             else:
