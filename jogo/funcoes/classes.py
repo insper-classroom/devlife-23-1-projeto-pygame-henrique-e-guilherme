@@ -44,9 +44,10 @@ class TelaInicial():
         self.fonte = pygame.font.Font(assets['fonte'], 50)
         self.fonte2 = assets['fonte2']
         self.texto2 = self.fonte2.render('Quando estiver pronto, aperte ENTER', True, (255, 230, 0))
-        self.texto3 = self.fonte2.render('Clique e escreva na caixa de texto,', True, (255, 230, 0))
+        self.texto3 = self.fonte2.render('Clique e escreva seu apelido na caixa de texto.', True, (255, 230, 0))
         self.caixa_de_texto = CaixaTexto(self.fonte2, assets)
         self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
+        self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
 
         
         self.logo = pygame.transform.scale(pygame.image.load('jogo/assets/logo.png'), (812, 98))
@@ -71,7 +72,7 @@ class TelaInicial():
         self.tela.blit(self.logo, (234, 250))
 
         self.tela.blit(self.texto2, (self.texto2_pos_x, 400))
-        self.tela.blit(self.texto3, (self.texto2_pos_x, 368))
+        self.tela.blit(self.texto3, (self.texto3_pos_x, 368))
         self.caixa_de_texto.desenha(self.tela)
         pygame.display.update()
 
@@ -214,6 +215,13 @@ class TelaJogo():
 
         self.pontuacao = 0
         self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
+
+        df = pd.read_csv('usuarios.csv')
+        df = df.sort_values(by=['score'], ascending=False)
+        df.to_csv('usuarios.csv', index=False)
+        if len(df) > 0:
+            assets['highscore'] = df.iloc[0]['score']
+
         self.timer_pontuacao_comeco = 0
         self.texto_highscore = self.fonte2.render('High score: ' + str(assets['highscore']), True, (255, 230, 0))
 
@@ -221,14 +229,15 @@ class TelaJogo():
         self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
 
         self.lista_de_vidas = []
-        self.timer_vidas_comeco = 0
-
+        self.timer_vidas_comeco = 0\
+        
+        
     #Ajuda do Ninja Marcelo
-    def salvar_highscore(self, assets):
+    def salvar_highscore(self, assets, score):
         #Le o arquivo csv
         df = pd.read_csv('usuarios.csv', sep=',')
         #Adiciona ao dataframe o novo usuario e sua pontuacao
-        df = df._append({'player': assets['usuario_atual'], 'score': assets['highscore']}, ignore_index=True)
+        df = df._append({'player': assets['usuario_atual'], 'score': score}, ignore_index=True)
         #Salva o arquivo csv com o dataframe
         df.to_csv('usuarios.csv', sep=',', index=False)
 
@@ -358,7 +367,7 @@ class TelaJogo():
         if self.jogador.vidas <=0:
             self.tem_que_trocar = True
             assets['pontuacao'] = self.pontuacao
-            self.salvar_highscore(assets)
+            self.salvar_highscore(assets, self.pontuacao)
  
         #Pontuação
         self.timer_pontuacao_fim = pygame.time.get_ticks() // 1000
@@ -398,10 +407,14 @@ class Tabela():
         self.tela = assets['tela']
 
         self.fonte2 = assets['fonte2']
+        self.fonte2_grande = assets['fonte2_grande']
 
         self.fonte = assets['fonte']
         self.texto = self.fonte2.render('Pressione "ESPAÇO" para reiniciar ou "ESC" PARA SAIR ' , True, (250, 250, 250))
         self.texto_pos_x = 640 - self.texto.get_rect()[2] / 2
+
+        self.texto2 = self.fonte2_grande.render('RANKING:' , True, ((255, 230, 0)))
+        self.texto2_pox_x = 640 - self.texto2.get_rect()[2] / 2
 
 
 
@@ -436,10 +449,12 @@ class Tabela():
 
         self.tela.blit(self.fundo, (0, 0))
         self.tela.blit(self.chao, (0, 620))
-        self.tela.blit(self.texto, (self.texto_pos_x, 200))
+        self.tela.blit(self.texto, (self.texto_pos_x, 225))
+        self.tela.blit(self.texto2, (self.texto2_pox_x, 150))
         
         for player in self.lista_de_usuarios:
-            self.tela.blit(player, (450, 300 + 50 * self.lista_de_usuarios.index(player)))
+            self.texto_player_pos_x = 640 - player.get_rect()[2] / 2
+            self.tela.blit(player, (self.texto_player_pos_x, 300 + 50 * self.lista_de_usuarios.index(player)))
 
         pygame.display.update()
 
@@ -460,7 +475,7 @@ class Tabela():
     
     def troca_tela(self):
         if self.tem_que_trocar:
-            return TelaJogo(self.dicionario)
+            return TelaInicial(self.dicionario)
         else:
             return self
         
@@ -708,9 +723,10 @@ class TelaGameOver():
         self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
 
         self.texto3 = self.fonte2.render('Pressione "ESPAÇO" para reiniciar, "ESC" PARA SAIR ou' , True, (250, 250, 250))
-
-        self.texto6 = self.fonte2.render('"TAB" para acessar a tabela' , True, (250, 250, 250))
         self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
+
+        self.texto6 = self.fonte2.render('"TAB" para acessar o ranking de jogadores' , True, (250, 250, 250))
+        self.texto6_pos_x = 640 - self.texto6.get_rect()[2] / 2
 
         self.texto4 = self.fonte2.render('High score: ' + str(assets['highscore']), True, (250, 250, 250))
         self.texto4_pos_x = 640 - self.texto4.get_rect()[2] / 2
@@ -735,7 +751,7 @@ class TelaGameOver():
         self.tela.blit(self.texto4, (self.texto4_pos_x, 350))
         self.tela.blit(self.texto5, (self.texto5_pos_x, 400))
         self.tela.blit(self.texto3, (self.texto3_pos_x, 470))
-        self.tela.blit(self.texto6, (self.texto3_pos_x + 200, 500))
+        self.tela.blit(self.texto6, (self.texto6_pos_x, 500))
         
 
         pygame.display.update()
@@ -755,7 +771,7 @@ class TelaGameOver():
                 if event.key == pygame.K_SPACE:
                     self.botao_som.play()
                     self.tem_que_trocar = True
-                    self.proxima_tela = TelaJogo(self.dicionario)
+                    self.proxima_tela = TelaInicial(self.dicionario)
                 elif event.key == pygame.K_TAB:
                     self.tem_que_trocar = True
                     self.proxima_tela = Tabela(self.dicionario)
