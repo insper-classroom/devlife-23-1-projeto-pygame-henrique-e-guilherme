@@ -40,7 +40,8 @@ class TelaInicial():
         self.tela = assets['tela']
         self.fonte = pygame.font.Font(assets['fonte'], 50)
         self.fonte2 = assets['fonte2']
-        self.texto2 = self.fonte2.render('Escreva seu nome e aperte ENTER para iniciar', True, (255, 230, 0))
+        self.texto2 = self.fonte2.render('Quando estiver pronto, aperte ENTER', True, (255, 230, 0))
+        self.texto3 = self.fonte2.render('Clique e escreva na caixa de texto,', True, (255, 230, 0))
         self.caixa_de_texto = CaixaTexto(self.fonte2, assets)
         self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
 
@@ -64,7 +65,8 @@ class TelaInicial():
 
         self.tela.blit(self.logo, (234, 250))
 
-        self.tela.blit(self.texto2, (self.texto2_pos_x, 368))
+        self.tela.blit(self.texto2, (self.texto2_pos_x, 400))
+        self.tela.blit(self.texto3, (self.texto2_pos_x, 368))
         self.caixa_de_texto.desenha(self.tela)
         pygame.display.update()
 
