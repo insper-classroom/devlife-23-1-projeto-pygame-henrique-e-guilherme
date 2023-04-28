@@ -1,5 +1,6 @@
 import pygame
 import random
+import pandas as pd
 
 class CaixaTexto():
     def __init__ (self, fonte, assets):
@@ -36,9 +37,6 @@ class CaixaTexto():
         pygame.draw.rect(screen, self.cor, self.rect, 5)
         screen.blit(self.texto_surface, (self.rect.x + 5, self.rect.y + 5))
 
-        
-
-
 class TelaInicial():
     def __init__(self, assets):
         self.dicionario = assets
@@ -59,6 +57,8 @@ class TelaInicial():
         self.musica_tela_inicial_tocando = False
 
         self.tem_que_trocar = False
+
+        self.tela_tabela = False
 
         self.botao_som = pygame.mixer.Sound('jogo/assets/botao_som.mp3')
 
@@ -223,6 +223,15 @@ class TelaJogo():
         self.lista_de_vidas = []
         self.timer_vidas_comeco = 0
 
+    #Ajuda do Ninja Marcelo
+    def salvar_highscore(self, assets):
+        #Le o arquivo csv
+        df = pd.read_csv('usuarios.csv', sep=',')
+        #Adiciona ao dataframe o novo usuario e sua pontuacao
+        df = df._append({'player': assets['usuario_atual'], 'score': assets['highscore']}, ignore_index=True)
+        #Salva o arquivo csv com o dataframe
+        df.to_csv('usuarios.csv', sep=',', index=False)
+
     def desenha(self):
         #Fundo infinito
         for i in range(self.tiles_fundo):
@@ -349,9 +358,7 @@ class TelaJogo():
         if self.jogador.vidas <=0:
             self.tem_que_trocar = True
             assets['pontuacao'] = self.pontuacao
-            f = open("usuarios.txt", "a")
-            f.write(f'{assets["usuario_atual"]}: '+f'{assets["highscore"]}''\n')
-            f.close()
+            self.salvar_highscore(assets)
  
         #Pontuação
         self.timer_pontuacao_fim = pygame.time.get_ticks() // 1000
@@ -371,7 +378,6 @@ class TelaJogo():
             self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
             
         return True
-    
     def spawn_inimigo(self):
         #Fantasma ou demonio
         if random.randint(0, 1):
@@ -383,6 +389,84 @@ class TelaJogo():
     def troca_tela(self):
         if self.tem_que_trocar:
             return TelaGameOver(self.dicionario)
+        else:
+            return self
+        
+class Tabela():
+    def __init__(self, assets):
+        self.dicionario = assets
+        self.tela = assets['tela']
+
+        self.fonte2 = assets['fonte2']
+
+        self.fonte = assets['fonte']
+        self.texto = self.fonte2.render('Pressione "ESPAÇO" para reiniciar ou "ESC" PARA SAIR ' , True, (250, 250, 250))
+        self.texto_pos_x = 640 - self.texto.get_rect()[2] / 2
+
+
+
+        self.lista_de_usuarios = []
+        self.nomes = []
+        df = pd.read_csv('usuarios.csv')
+        
+        #Ordem decrescente
+        df = df.sort_values(by=['score'], ascending=False)
+
+        #Acha se o player ja esta e subscreve o score com a maior pontuação
+        for i in range(len(df)):
+            if df.iloc[i]['player'] == assets['usuario_atual']:
+                if df.iloc[i]['score'] < assets['highscore']:
+                    df.iloc[i]['score'] = assets['highscore']
+                    break
+        df.to_csv('usuarios.csv', index=False)
+
+        
+        for i in range(5):
+            if i < len(df):
+                #Escreve o nome do player ao lado da sua pontuacao
+                if df.iloc[i]['player']:
+                    texto = self.fonte2.render(str(i+1) + ' - ' + str(df.iloc[i]['player']) + ' - ' + str(df.iloc[i]['score']), True, (255, 255, 255))
+                    self.lista_de_usuarios.append(texto)
+
+        self.fundo = assets['fundo']
+        self.chao = assets['ground']
+
+        self.musica_tela_inicial_tocando = False
+
+        self.tem_que_trocar = False
+
+        self.botao_som = pygame.mixer.Sound('jogo/assets/botao_som.mp3')
+
+    def desenha(self):
+        self.tela.fill((255, 255, 255))
+
+        self.tela.blit(self.fundo, (0, 0))
+        self.tela.blit(self.chao, (0, 620))
+        self.tela.blit(self.texto, (self.texto_pos_x, 200))
+        
+        for player in self.lista_de_usuarios:
+            self.tela.blit(player, (450, 300 + 50 * self.lista_de_usuarios.index(player)))
+
+        pygame.display.update()
+
+    def update(self, assets):
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.botao_som.play()
+                    self.tem_que_trocar = True
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    return False
+        return True
+    
+    def troca_tela(self):
+        if self.tem_que_trocar:
+            return TelaJogo(self.dicionario)
         else:
             return self
         
@@ -629,7 +713,9 @@ class TelaGameOver():
         self.texto2 = self.fonte2_xgrande.render('GAME OVER', True, (255, 41, 41))
         self.texto2_pos_x = 640 - self.texto2.get_rect()[2] / 2
 
-        self.texto3 = self.fonte2.render('Pressione "ESPAÇO" para reiniciar ou "ESC" PARA SAIR', True, (250, 250, 250))
+        self.texto3 = self.fonte2.render('Pressione "ESPAÇO" para reiniciar, "ESC" PARA SAIR ou' , True, (250, 250, 250))
+
+        self.texto6 = self.fonte2.render('"TAB" para acessar a tabela' , True, (250, 250, 250))
         self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
 
         self.texto4 = self.fonte2.render('High score: ' + str(assets['highscore']), True, (250, 250, 250))
@@ -640,6 +726,7 @@ class TelaGameOver():
 
         self.fundo = assets['fundo']
         self.chao = assets['ground']
+        self.proxima_tela = None
 
         self.musica_tela_jogo_tocando = True
 
@@ -654,6 +741,7 @@ class TelaGameOver():
         self.tela.blit(self.texto4, (self.texto4_pos_x, 350))
         self.tela.blit(self.texto5, (self.texto5_pos_x, 400))
         self.tela.blit(self.texto3, (self.texto3_pos_x, 470))
+        self.tela.blit(self.texto6, (self.texto3_pos_x + 200, 500))
         
 
         pygame.display.update()
@@ -673,6 +761,10 @@ class TelaGameOver():
                 if event.key == pygame.K_SPACE:
                     self.botao_som.play()
                     self.tem_que_trocar = True
+                    self.proxima_tela = TelaJogo(self.dicionario)
+                elif event.key == pygame.K_TAB:
+                    self.tem_que_trocar = True
+                    self.proxima_tela = Tabela(self.dicionario)
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     return False
@@ -680,7 +772,7 @@ class TelaGameOver():
     
     def troca_tela(self):
         if self.tem_que_trocar:
-            return TelaJogo(self.dicionario)
+            return self.proxima_tela
         else:
             return self
         
