@@ -357,7 +357,10 @@ class TelaJogo():
         self.lista_objetos_fundo.append(ObjetoFundo(3))
         self.timer_objetos_fundo_comeco = 3
 
-        self.cooldown_spawn_demonio = 2
+        self.cooldown_spawn_demonio = 5
+
+        self.nivel_dificuldade = 1
+        self.nivel_dificuldade_timer_comeco = pygame.time.get_ticks() // 1000
         
         
     #Ajuda do Ninja Marcelo
@@ -481,22 +484,73 @@ class TelaJogo():
                 #Remove a explosão da lista caso sua animação termine
                 self.lista_explosoes.remove(explosao)
 
-        #Spawna inimigos a cada 2 segundos
-        if relogio % self.cooldown_spawn_demonio == 0 and self.pode_spawnar and relogio != 0:
-            self.spawn_inimigo()
-            self.pode_spawnar = False
-            self.tempo = relogio
+        #Define o nivel de dificuldade
+        self.nivel_dificuldade_timer_final = pygame.time.get_ticks() // 1000
+        if self.nivel_dificuldade_timer_final - self.nivel_dificuldade_timer_comeco == 0:
+            self.nivel_dificuldade = 1
+        if self.nivel_dificuldade_timer_final - self.nivel_dificuldade_timer_comeco > 30:
+            self.nivel_dificuldade = 2
+        if self.nivel_dificuldade_timer_final - self.nivel_dificuldade_timer_comeco > 60:
+            self.nivel_dificuldade = 3
 
-        #Evita que o inimigo nasça em cima do outro
-        if self.tempo != relogio:
-            self.pode_spawnar = True
-            self.pode_spawnar_morcego = True
+        #Nivel de dificuldade 1
+        if self.nivel_dificuldade == 1:
+            #Spawna inimigos a cada 5 segundos
+            if relogio % self.cooldown_spawn_demonio == 0 and self.pode_spawnar and relogio != 0:
+                self.spawn_inimigo()
+                self.pode_spawnar = False
+                self.tempo = relogio
 
-        #Spawn Morcegos a cada 5 segundos
-        if relogio % 5 == 0 and self.pode_spawnar_morcego and relogio != 0:
-            self.lista_de_inimigos.append(Morcego())
-            self.pode_spawnar_morcego = False
-            self.tempo = relogio
+            #Evita que o inimigo nasça em cima do outro
+            if self.tempo != relogio:
+                self.pode_spawnar = True
+                self.pode_spawnar_morcego = True
+
+            #Spawn Morcegos a cada 10 segundos
+            if relogio % 10 == 0 and self.pode_spawnar_morcego and relogio != 0:
+                self.lista_de_inimigos.append(Morcego())
+                self.pode_spawnar_morcego = False
+                self.tempo = relogio
+
+        #Nivel de dificuldade 2
+        elif self.nivel_dificuldade == 2:
+            #Spawna inimigos a cada 2 segundos
+            self.cooldown_spawn_demonio = 2
+            if relogio % self.cooldown_spawn_demonio == 0 and self.pode_spawnar and relogio != 0:
+                self.spawn_inimigo()
+                self.pode_spawnar = False
+                self.tempo = relogio
+
+            #Evita que o inimigo nasça em cima do outro
+            if self.tempo != relogio:
+                self.pode_spawnar = True
+                self.pode_spawnar_morcego = True
+
+            #Spawn Morcegos a cada 5 segundos
+            if relogio % 5 == 0 and self.pode_spawnar_morcego and relogio != 0:
+                self.lista_de_inimigos.append(Morcego())
+                self.pode_spawnar_morcego = False
+                self.tempo = relogio
+
+        #Nivel de dificuldade 3
+        elif self.nivel_dificuldade == 3:
+            #Spawna inimigos a cada 1 segundos
+            self.cooldown_spawn_demonio = 1
+            if relogio % self.cooldown_spawn_demonio == 0 and self.pode_spawnar and relogio != 0:
+                self.spawn_inimigo()
+                self.pode_spawnar = False
+                self.tempo = relogio
+
+            #Evita que o inimigo nasça em cima do outro
+            if self.tempo != relogio:
+                self.pode_spawnar = True
+                self.pode_spawnar_morcego = True
+
+            #Spawn Morcegos a cada 1 segundos
+            if relogio % 1 == 0 and self.pode_spawnar_morcego and relogio != 0:
+                self.lista_de_inimigos.append(Morcego())
+                self.pode_spawnar_morcego = False
+                self.tempo = relogio
 
         #Spawn Coracoes
         self.timer_vidas_fim = pygame.time.get_ticks() // 1000
