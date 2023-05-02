@@ -279,6 +279,8 @@ class TelaJogo():
         tempo do jogo
     tem_que_trocar : bool
         variável que controla a troca de tela 
+    tiros : sprite.Group()
+        grupo de tiros, usado para a colisão e desenhar os tiros
     As listas contém os objetos do jogo
     Os timers e os cooldowns determinam o tempo para certa ação acontecer
     """
