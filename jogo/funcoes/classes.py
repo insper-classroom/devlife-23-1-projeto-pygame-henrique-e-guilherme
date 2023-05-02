@@ -57,6 +57,7 @@ class CaixaTexto():
         if event.type == pygame.KEYDOWN and self.pode_escrever:
             if event.key == pygame.K_RETURN:
                 self.assets['usuario_atual'] = self.texto
+                
             #Diminui o tamanho
             elif event.key == pygame.K_BACKSPACE:
                 self.texto = self.texto[:-1]
@@ -123,6 +124,8 @@ class TelaInicial():
         self.tem_que_trocar = False
 
         self.tela_tabela = False
+        
+        self.erro = False
 
         self.botao_som = pygame.mixer.Sound('jogo/assets/audio/botao_som.mp3')
 
@@ -136,6 +139,11 @@ class TelaInicial():
 
         self.tela.blit(self.texto2, (self.texto2_pos_x, 400))
         self.tela.blit(self.texto3, (self.texto3_pos_x, 368))
+
+        if self.erro:
+            self.texto4_pos_x = 640 - self.texto4.get_rect()[2] / 2
+            self.tela.blit(self.texto4, (self.texto4_pos_x, 580))
+
         self.caixa_de_texto.desenha(self.tela)
         pygame.display.update()
 
@@ -147,14 +155,22 @@ class TelaInicial():
             self.musica_tela_inicial_tocando = True
 
         for event in pygame.event.get():
+            self.caixa_de_texto.escreve(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    self.botao_som.play()
-                    self.tem_que_trocar = True
-            self.caixa_de_texto.escreve(event)
+                    if assets['usuario_atual'] != '':
+                        self.botao_som.play()
+                        self.tem_que_trocar = True
+
+                    elif self.erro == False:
+                        self.texto4 = self.fonte2.render('Escreva seu nome primeiro!', True, (255, 255,255))
+                        self.erro = True
+
+                    else:
+                        self.texto4 = self.fonte2.render('', True, (255, 255,255))
         return True
     
     """ Troca a tela para a tela de instruções caso o usuário aperte ENTER."""
