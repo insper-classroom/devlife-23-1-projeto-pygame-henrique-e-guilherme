@@ -386,10 +386,10 @@ class TelaJogo():
                 self.lista_de_inimigos.remove(inimigo)
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
             #Remove os inimigos que sairam da tela
-            if inimigo.rect.centerx < -50:
+            elif inimigo.rect.centerx < -50:
                 self.lista_de_inimigos.remove(inimigo)
             #Remove os inimigos que colidiram com os tiros
-            if pygame.sprite.spritecollide(inimigo, self.tiros, True, pygame.sprite.collide_mask):
+            elif pygame.sprite.spritecollide(inimigo, self.tiros, True, pygame.sprite.collide_mask):
                 self.lista_explosoes.append(Explosao(inimigo.rect.centerx, inimigo.rect.centery))
                 self.lista_de_inimigos.remove(inimigo)
                 Jogador().pontuou_som.play()
