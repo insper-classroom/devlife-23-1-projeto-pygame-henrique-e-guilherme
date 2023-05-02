@@ -8,15 +8,19 @@ Acesse a [página do jogo](https://insper-classroom.github.io/devlife-23-1-proje
 
 - Modo de instalar:
 1. Para jogar, é necessário ter o Python 3 instalado na máquina
-2. Você deve instalar a biblioteca [pygame](https://www.pygame.org/news) e a [pandas](https://pandas.pydata.org/) com os comandos: 
+2. Você deve instalar a biblioteca [pygame](https://www.pygame.org/news) e a [pandas](https://pandas.pydata.org/) com os comandos no terminal: 
 ```
 pip install pygame
 ```
 ```
 pip install pandas
 ```
-3. Após instalar as bibliotecas, utilize o botão abaixo para baixar o arquivo .zip e o extraia
+3. Após instalar as bibliotecas, utilize o botão de download para baixar o arquivo .zip e o extraia
 4. Após isso, execute o arquivo "jogo.py", dentro da pasta "funcoes", e o jogo será aberto em uma nova janela
+
+
+**[Download](https://insper-classroom.github.io/devlife-23-1-projeto-pygame-henrique-e-guilherme/Knight%20Runner.zip)**
+
 
 **Pular**: ESPAÇO
 
