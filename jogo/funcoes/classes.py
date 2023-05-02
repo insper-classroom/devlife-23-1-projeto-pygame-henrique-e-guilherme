@@ -340,6 +340,8 @@ class TelaJogo():
         self.lista_objetos_fundo = []
         self.lista_objetos_fundo.append(ObjetoFundo(3))
         self.timer_objetos_fundo_comeco = 3
+
+        self.cooldown_spawn_demonio = 2
         
         
     #Ajuda do Ninja Marcelo
@@ -455,6 +457,8 @@ class TelaJogo():
                 elif inimigo.tipo == 'demonio':
                     self.pontuacao += 25
                 self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
+
+
         #Animação da explosão
         for explosao in self.lista_explosoes:
             if explosao.frame_atual == 7:
@@ -462,12 +466,12 @@ class TelaJogo():
                 self.lista_explosoes.remove(explosao)
 
         #Spawna inimigos a cada 2 segundos
-        if relogio % 2 == 0 and self.pode_spawnar and relogio != 0:
+        if relogio % self.cooldown_spawn_demonio == 0 and self.pode_spawnar and relogio != 0:
             self.spawn_inimigo()
             self.pode_spawnar = False
             self.tempo = relogio
 
-        #Faz spawnar a cada 1 segundo, evita que o inimigo nasça em cima do outro
+        #Evita que o inimigo nasça em cima do outro
         if self.tempo != relogio:
             self.pode_spawnar = True
             self.pode_spawnar_morcego = True
@@ -492,6 +496,7 @@ class TelaJogo():
                     self.jogador.vidas += 1
                     Coracao().som.play()
                 self.texto_vidas = pygame.transform.scale_by(self.fonte2.render(chr(9829) * self.jogador.vidas, True, (255, 0, 0)), 1.5)
+
 
         #Jogador morre
         if self.jogador.vidas <=0:
@@ -529,6 +534,8 @@ class TelaJogo():
             index_objeto = random.randint(0, 3)
             self.lista_objetos_fundo.append(ObjetoFundo(index_objeto))
             self.timer_objetos_fundo_comeco = self.timer_objetos_fundo_fim
+
+
         
             
         return True
@@ -665,7 +672,7 @@ class Jogador(pygame.sprite.Sprite):
 
         self.vidas = 3
 
-        self.mask = pygame.mask.from_surface(self.image)
+        self.mask = pygame.mask.from_surface(self.lista_sprites[0])
 
         self.dano_som = pygame.mixer.Sound('jogo/assets/audio/dano_som.mp3')
         self.pontuou_som = pygame.mixer.Sound('jogo/assets/audio/pontuou_som.mp3')
@@ -758,6 +765,8 @@ class Inimigo (pygame.sprite.Sprite):
 
         self.frame_atual = 0
         self.cooldown_animacao = 100
+
+        self.velocidade = 3
         
 
         if em_cima:
@@ -789,7 +798,7 @@ class Inimigo (pygame.sprite.Sprite):
 
     def update(self):
         #Movimentação do inimigo para a esquerda
-        self.rect.centerx -= 3
+        self.rect.centerx -= self.velocidade
 
         #Se o inimigo passar da tela, ele é destruído
         if self.rect.centerx <= -100:
@@ -833,11 +842,11 @@ class Morcego (pygame.sprite.Sprite):
         self.rect.centerx = 1280
 
         self.tipo = 'morcego'
-
+        self.velocidade = 7
     
     def update(self):
         #Movimentação do morcego para a esquerda (Mais rápido que os outros inimigos)
-        self.rect.centerx -= 7
+        self.rect.centerx -= self.velocidade
         tempo_atual = pygame.time.get_ticks()
 
         #Troca de frame da animação
