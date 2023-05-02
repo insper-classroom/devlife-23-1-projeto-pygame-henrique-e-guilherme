@@ -45,7 +45,7 @@ class CaixaTexto():
         event : pygame.event.Event
             evento que está sendo tratado
         """
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             #Muda cor caso clicado
             if  self.rect.collidepoint(event.pos):
                 self.pode_escrever = True
@@ -179,7 +179,7 @@ class TelaInstrucoes():
         self.texto3 = self.fonte2.render('- Pressione "ESPAÇO" para pular', True, (255, 230, 0))
         self.texto3_pos_x = 640 - self.texto3.get_rect()[2] / 2
 
-        self.texto4 = self.fonte2.render('- Pressione "BOTÃO MOUSE 1" para atirar', True, (255, 230, 0))
+        self.texto4 = self.fonte2.render('- Pressione "BOTÃO ESQUERDO DO MOUSE" para atirar', True, (255, 230, 0))
         self.texto4_pos_x = 640 - self.texto4.get_rect()[2] / 2
 
         self.texto5 = self.fonte2.render('- Sobreviva por mais tempo para obter pontos', True, (255, 230, 0))
@@ -424,7 +424,7 @@ class TelaJogo():
                 return False
 
             #Atira
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.jogador.municoes > 0:
                     self.tiros.add(Tiro(self.jogador.rect.centery))
                     #Som do tiro

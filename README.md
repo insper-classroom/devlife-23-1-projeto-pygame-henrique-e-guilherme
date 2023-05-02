@@ -13,7 +13,7 @@ Este é um projeto de um jogo 2D desenvolvido por Guilherme Kaidei e Henrique Ma
 
 **Pular**: ESPAÇO
 
-**Atirar**: BOTÃO 1 MOUSE
+**Atirar**: BOTÃO ESQUERDO DO MOUSE
 _________________
 
 - Descrição do jogo:
