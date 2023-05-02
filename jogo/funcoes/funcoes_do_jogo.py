@@ -1,5 +1,5 @@
 import pygame
-from classes import TelaInicial, TelaJogo, TelaGameOver
+from telas import TelaInicial
 
 
 def inicializa():
