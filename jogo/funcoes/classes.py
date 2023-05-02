@@ -265,20 +265,12 @@ class TelaJogo():
         superfície onde os elementos serão desenhados
     fonte : pygame.font.Font
         fonte usada para escrever na tela
-    fundo : pygame.image
-        imagem de fundo
-    chao : pygame.image
-        imagem do chão
     jogador : Jogador()
         classe do jogador
-    scroll_fundo : int
-        valor do scroll do fundo
-    tiles_fundo : int
-        quantidade de tiles do fundo
-    scroll_chao : int
-        valor do scroll do chão
-    tiles_chao : int
-        quantidade de tiles do chão
+    scroll: int
+        valor do scroll do fundo ou chao
+    tiles : int
+        quantidade de tiles do fundo ou chao
     pode_spawnar : bool
         variável que controla o spawn dos monstros
     Clock : pygame.time.Clock
@@ -287,7 +279,8 @@ class TelaJogo():
         tempo do jogo
     tem_que_trocar : bool
         variável que controla a troca de tela 
-    As outras variáveis tem seu sentido em seu nome
+    As listas contém os objetos do jogo
+    Os timers e os cooldowns determinam o tempo para certa ação acontecer
     """
     def __init__(self, assets):
         self.fonte = pygame.font.Font(assets['fonte'], 50)
@@ -424,6 +417,9 @@ class TelaJogo():
         pygame.display.update()
 
     def update(self, assets):
+        #Tempo do jogo
+        relogio = pygame.time.get_ticks() // 1000
+
         if not self.musica_jogo_tocando:
             pygame.mixer_music.load('jogo/assets/audio/musica_jogo.mp3')
             pygame.mixer_music.set_volume(0.3)
@@ -446,8 +442,6 @@ class TelaJogo():
                     self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
             self.jogador.pulo_jogador(event)
         
-        relogio = pygame.time.get_ticks() // 1000
-
         #Itera a lista de inimigos
         for inimigo in self.lista_de_inimigos:
             #Remove os inimigos que colidiram e diminui a vida do jogador
