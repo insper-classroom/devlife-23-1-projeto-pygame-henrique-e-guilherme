@@ -168,9 +168,6 @@ class TelaInicial():
                     elif self.erro == False:
                         self.texto4 = self.fonte2.render('Escreva seu nome primeiro!', True, (255, 255,255))
                         self.erro = True
-
-                    else:
-                        self.texto4 = self.fonte2.render('', True, (255, 255,255))
         return True
     
     """ Troca a tela para a tela de instruções caso o usuário aperte ENTER."""
