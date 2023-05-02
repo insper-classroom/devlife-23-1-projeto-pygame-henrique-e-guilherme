@@ -229,7 +229,11 @@ class TelaJogo():
         self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
 
         self.lista_de_vidas = []
-        self.timer_vidas_comeco = 0\
+        self.timer_vidas_comeco = 0
+        
+        self.lista_objetos_fundo = []
+        self.lista_objetos_fundo.append(ObjetoFundo(3))
+        self.timer_objetos_fundo_comeco = 3
         
         
     #Ajuda do Ninja Marcelo
@@ -255,6 +259,10 @@ class TelaJogo():
         self.scroll_chao -= 5
         if abs(self.scroll_chao) > self.chao.get_width():
             self.scroll_chao = 0
+
+        for objeto in self.lista_objetos_fundo:
+            objeto.update()
+            self.tela.blit(objeto.image, objeto.rect)
 
         #Vidas
         self.tela.blit(self.texto_vidas_max, (7, 0))
@@ -325,7 +333,12 @@ class TelaJogo():
                 self.lista_explosoes.append(Explosao(inimigo.rect.centerx, inimigo.rect.centery))
                 self.lista_de_inimigos.remove(inimigo)
                 Jogador().pontuou_som.play()
-                self.pontuacao += 50
+                if inimigo.tipo == 'morcego':
+                    self.pontuacao += 100
+                elif inimigo.tipo == 'fantasma':
+                    self.pontuacao += 50
+                elif inimigo.tipo == 'demonio':
+                    self.pontuacao += 25
                 self.texto_pontuacao = self.fonte2.render('Current score: ' + str(self.pontuacao), True, (255, 230, 0))
 
         for explosao in self.lista_explosoes:
@@ -385,6 +398,14 @@ class TelaJogo():
             self.jogador.municoes += 1
             self.timer_recarga_municao_comeco = self.timer_recarga_municao_fim
             self.texto_municao = self.fonte2.render('Municao: ' + str(self.jogador.municoes), True, (255, 230, 0))
+
+        #Objetos fundo
+        self.timer_objetos_fundo_fim = pygame.time.get_ticks() // 1000
+        if self.timer_objetos_fundo_fim - self.timer_objetos_fundo_comeco >= 3:
+            index_objeto = random.randint(0, 3)
+            self.lista_objetos_fundo.append(ObjetoFundo(index_objeto))
+            self.timer_objetos_fundo_comeco = self.timer_objetos_fundo_fim
+        
             
         return True
     def spawn_inimigo(self):
@@ -415,8 +436,6 @@ class Tabela():
 
         self.texto2 = self.fonte2_grande.render('RANKING:' , True, ((255, 230, 0)))
         self.texto2_pox_x = 640 - self.texto2.get_rect()[2] / 2
-        
-
 
         self.lista_de_usuarios = []
         self.nomes = []
@@ -575,6 +594,7 @@ class Inimigo (pygame.sprite.Sprite):
             posicao_y = 400
             self.image = pygame.image.load('jogo/assets/ghost_provisorio.png').convert_alpha()
             self.sprites = SpriteSheet('jogo/assets/ghost_sprite_sheet.png')
+            self.tipo = 'fantasma'
             for contador in range(4):
                 self.lista_sprites.append(self.sprites.corta_imagem(contador, 20, 22, 4))
 
@@ -586,6 +606,7 @@ class Inimigo (pygame.sprite.Sprite):
             for contador in range(4):
                 self.lista_sprites.append(self.sprites.corta_imagem(contador, 24 , 24, 4))
             self.demonio = True
+            self.tipo = 'demonio'
 
 
 
@@ -636,6 +657,8 @@ class Morcego (pygame.sprite.Sprite):
         #Posicoes
         self.rect.centery = 500
         self.rect.centerx = 1280
+
+        self.tipo = 'morcego'
 
     
     def update(self):
@@ -709,6 +732,35 @@ class Explosao (pygame.sprite.Sprite):
 
         if self.rect.centerx <= -100:
             self.kill()
+
+class ObjetoFundo(pygame.sprite.Sprite):
+    def __init__(self, numero):
+        pygame.sprite.Sprite.__init__(self)
+        self.lista_imagens = []
+        self.lista_imagens.append(pygame.image.load('jogo/assets/objetos_fundo/objeto2.png').convert_alpha())
+        self.lista_imagens.append(pygame.image.load('jogo/assets/objetos_fundo/objeto3.png').convert_alpha())
+        self.lista_imagens.append(pygame.image.load('jogo/assets/objetos_fundo/objeto4.png').convert_alpha())
+        self.lista_imagens.append(pygame.image.load('jogo/assets/objetos_fundo/objeto5.png').convert_alpha())
+        self.image = self.lista_imagens[numero]
+        self.image = pygame.transform.scale_by(self.image, 7)
+        self.rect = self.image.get_rect()
+        if numero == 0:
+            self.rect.centery = 530
+        elif numero == 1:
+            self.rect.centery = 520
+        elif numero == 2:
+            self.rect.centery = 515
+        elif numero == 3:
+            self.rect.centery = 557
+        self.rect.centerx = 1350
+
+
+    def update(self):
+        self.rect.x -= 5
+
+        if self.rect.left < -20:
+            self.kill()
+
 
 class TelaGameOver():
     def __init__(self, assets):
@@ -834,7 +886,6 @@ class Coracao (pygame.sprite.Sprite):
         if self.rect.centerx <= -100:
             self.kill()
         tempo_atual = pygame.time.get_ticks()
-        # if self.demonio:
         if tempo_atual - self.tempo > self.cooldown_animacao:
             self.tempo = tempo_atual
             self.frame_atual += 1
